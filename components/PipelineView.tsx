@@ -206,6 +206,12 @@ export function PipelineView() {
         stages={stages}
         isSeller={tab === 'seller'}
         onClose={() => setSelected(null)}
+        onSave={(patch) => {
+          if (!selected) return;
+          const upd = (arr: Client[]) => arr.map(c => c.id === selected.id ? { ...c, ...patch } : c);
+          if (selected.type === 'seller') setSellers(upd); else setBuyers(upd);
+          setSelected(prev => prev ? { ...prev, ...patch } : null);
+        }}
         onAdvance={(idx) => {
           if (!selected) return;
           const upd = (arr: Client[]) => arr.map(c => c.id === selected.id ? { ...c, current_stage: idx, entered_stage: 0 } : c);
