@@ -164,7 +164,7 @@ export function PipelineView() {
   return (
     <div className="app">
       <Sidebar activeView={view} onNav={setView} />
-      {view === 'dashboard' ? (
+      {view === 'pipeline' ? (
         <DashboardView sellers={sellers} buyers={buyers} />
       ) : view === 'inbox' ? (
         <InboxView />

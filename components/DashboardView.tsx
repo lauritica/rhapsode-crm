@@ -24,7 +24,7 @@ export function DashboardView({ sellers, buyers }: DashboardViewProps) {
             <div className="crumb">
               <span>Workspace</span>
               <i className="crumb-dot" />
-              <span>Dashboard</span>
+              <span>Pipeline</span>
             </div>
             <h1>Today</h1>
           </div>

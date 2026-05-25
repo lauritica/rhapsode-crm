@@ -14,9 +14,9 @@ export function Topbar({ query, setQuery }: TopbarProps) {
         <div className="crumb">
           <span>Workspace</span>
           <i className="crumb-dot" />
-          <span>Pipeline</span>
+          <span>Dashboard</span>
         </div>
-        <h1>Pipeline Timeline</h1>
+        <h1>Dashboard</h1>
       </div>
 
       <div className="topbar-spacer" />
