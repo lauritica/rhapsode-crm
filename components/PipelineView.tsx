@@ -33,7 +33,7 @@ function useLocalStorage<T>(key: string, initial: T): [T, (v: T) => void] {
 }
 
 export function PipelineView() {
-  const [view, setView] = useState<string>('pipeline');
+  const [view, setView] = useLocalStorage<string>('rhap.view', 'dashboard');
   const [tab, setTab] = useLocalStorage<TabOption>('rhap.tab', 'seller');
   const [sort, setSort] = useLocalStorage<SortOption>('rhap.sort', 'stage');
   const [query, setQuery] = useState('');
