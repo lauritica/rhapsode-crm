@@ -24,9 +24,9 @@ export function DashboardView({ sellers, buyers }: DashboardViewProps) {
             <div className="crumb">
               <span>Workspace</span>
               <i className="crumb-dot" />
-              <span>Pipeline</span>
+              <span>Clients</span>
             </div>
-            <h1>Today</h1>
+            <h1>Clients</h1>
           </div>
           <div className="topbar-spacer" />
           <div className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)' }}>{today}</div>
