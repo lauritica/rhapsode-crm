@@ -940,6 +940,24 @@ input { font-family: inherit; }
 /* Icon */
 .cell-ico { font-size: 10px; display: inline-block; filter: saturate(1.2); }
 
+/* ===== Dashboard / Today ===== */
+.today-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg-1);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.today-card:hover { background: var(--bg-2); }
+.today-card-left { display: flex; align-items: flex-start; gap: 12px; flex: 1; min-width: 0; }
+.today-card-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+
 /* Scrollbars */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }

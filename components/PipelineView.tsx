@@ -11,6 +11,7 @@ import { TabsRow } from './TabsRow';
 import { Pipeline } from './Pipeline';
 import { Drawer } from './Drawer';
 import { CellPopover, PopoverState } from './CellPopover';
+import { DashboardView } from './DashboardView';
 
 function useLocalStorage<T>(key: string, initial: T): [T, (v: T) => void] {
   const [v, setV] = useState<T>(() => {
@@ -31,6 +32,7 @@ function useLocalStorage<T>(key: string, initial: T): [T, (v: T) => void] {
 }
 
 export function PipelineView() {
+  const [view, setView] = useState<string>('pipeline');
   const [tab, setTab] = useLocalStorage<TabOption>('rhap.tab', 'seller');
   const [sort, setSort] = useLocalStorage<SortOption>('rhap.sort', 'stage');
   const [query, setQuery] = useState('');
@@ -160,28 +162,32 @@ export function PipelineView() {
 
   return (
     <div className="app">
-      <Sidebar />
-      <main className="main">
-        <Topbar query={query} setQuery={setQuery} />
-        <KPIs sellers={sellers} buyers={buyers} />
-        <TabsRow
-          tab={tab}
-          setTab={setTab}
-          sellerCount={sellers.length}
-          buyerCount={buyers.length}
-          sort={sort}
-          setSort={setSort}
-        />
-        <Pipeline
-          stages={stages}
-          clients={clients}
-          showLabels={true}
-          continuousBar={true}
-          isSeller={tab === 'seller'}
-          onRowClick={onRowClick}
-          onCellClick={onCellClick}
-        />
-      </main>
+      <Sidebar activeView={view} onNav={setView} />
+      {view === 'dashboard' ? (
+        <DashboardView sellers={sellers} buyers={buyers} />
+      ) : (
+        <main className="main">
+          <Topbar query={query} setQuery={setQuery} />
+          <KPIs sellers={sellers} buyers={buyers} />
+          <TabsRow
+            tab={tab}
+            setTab={setTab}
+            sellerCount={sellers.length}
+            buyerCount={buyers.length}
+            sort={sort}
+            setSort={setSort}
+          />
+          <Pipeline
+            stages={stages}
+            clients={clients}
+            showLabels={true}
+            continuousBar={true}
+            isSeller={tab === 'seller'}
+            onRowClick={onRowClick}
+            onCellClick={onCellClick}
+          />
+        </main>
+      )}
       <Drawer
         client={selected}
         stages={stages}
