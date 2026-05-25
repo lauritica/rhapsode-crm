@@ -38,8 +38,9 @@ export function DashboardView({ sellers, buyers }: DashboardViewProps) {
           </div>
           {all.map(c => {
             const av = avatarFor(c.name);
-            const lcCls = c.last_contact >= 14 ? 'stale' : c.last_contact >= 7 ? 'warn' : '';
-            const lcLabel = c.last_contact === 0 ? 'today' : c.last_contact === 1 ? '1d ago' : `${c.last_contact}d ago`;
+            const lc = c.last_contact ?? null;
+            const lcCls = lc == null ? '' : lc >= 14 ? 'stale' : lc >= 7 ? 'warn' : '';
+            const lcLabel = lc == null ? '—' : lc === 0 ? 'today' : lc === 1 ? '1d ago' : `${lc}d ago`;
             const sm = STATUS_META[c.status];
             return (
               <div key={c.id} className="today-card" onClick={() => setSelected(c)}>

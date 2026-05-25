@@ -14,13 +14,10 @@ interface RowProps {
 
 export function PipelineRow({ client, stages, showLabels, continuousBar, onRowClick, onCellClick }: RowProps) {
   const av = avatarFor(client.name);
-  const lcCls = client.last_contact >= 14 ? 'stale' : client.last_contact >= 7 ? 'warn' : '';
+  const lc = client.last_contact ?? null;
+  const lcCls = lc == null ? '' : lc >= 14 ? 'stale' : lc >= 7 ? 'warn' : '';
   const lcLabel =
-    client.last_contact === 0
-      ? 'today'
-      : client.last_contact === 1
-        ? '1d ago'
-        : `${client.last_contact}d ago`;
+    lc == null ? '—' : lc === 0 ? 'today' : lc === 1 ? '1d ago' : `${lc}d ago`;
 
   return (
     <div className="row" onClick={() => onRowClick(client)}>
