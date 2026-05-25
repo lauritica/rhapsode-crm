@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Client, Stage, avatarFor, STATUS_META } from '@/lib/types';
 import { Icons } from './Icons';
-import { supabase } from '@/lib/supabase';
+import { patchClient } from '@/lib/db';
 
 interface DrawerProps {
   client: Client | null;
@@ -89,9 +89,7 @@ export function Drawer({ client, stages, isSeller = true, onClose, onAdvance, on
       email: editFields.email || undefined,
     };
     onSave?.(patch);
-    try {
-      await supabase.from('clients').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', client.id);
-    } catch {}
+    patchClient(client.id, patch);
     setEditMode(false);
   };
 

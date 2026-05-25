@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Client, ClientStatus, SELLER_STAGES, BUYER_STAGES, TabOption, SortOption } from '@/lib/types';
 import { SELLERS, BUYERS } from '@/lib/data';
-import { supabase } from '@/lib/supabase';
+import { fetchClients, patchClient as saveClient } from '@/lib/db';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { KPIs } from './KPIs';
@@ -42,23 +42,13 @@ export function PipelineView() {
   const [sellers, setSellers] = useState<Client[]>(SELLERS);
   const [buyers, setBuyers] = useState<Client[]>(BUYERS);
 
-  // Load from Supabase on mount, fall back to local data gracefully
   useEffect(() => {
-    async function loadClients() {
-      try {
-        const { data, error } = await supabase
-          .from('clients')
-          .select('*');
-        if (error) throw error;
-        if (data && data.length > 0) {
-          setSellers(data.filter((c) => c.type === 'seller') as Client[]);
-          setBuyers(data.filter((c) => c.type === 'buyer') as Client[]);
-        }
-      } catch {
-        // Silently fall back to local seed data if Supabase isn't available
+    fetchClients().then(data => {
+      if (data.length > 0) {
+        setSellers(data.filter(c => c.type === 'seller'));
+        setBuyers(data.filter(c => c.type === 'buyer'));
       }
-    }
-    loadClients();
+    });
   }, []);
 
   const stages = tab === 'seller' ? SELLER_STAGES : BUYER_STAGES;
@@ -120,15 +110,7 @@ export function PipelineView() {
       if (clientType === 'seller') setSellers(upd);
       else setBuyers(upd);
 
-      // Persist to Supabase
-      try {
-        await supabase
-          .from('clients')
-          .update({ ...patch, updated_at: new Date().toISOString() })
-          .eq('id', clientId);
-      } catch {
-        // Silently fail — we already updated optimistically
-      }
+      saveClient(clientId, patch);
     },
     [pop]
   );
@@ -217,7 +199,7 @@ export function PipelineView() {
           const upd = (arr: Client[]) => arr.map(c => c.id === selected.id ? { ...c, current_stage: idx, entered_stage: 0 } : c);
           if (selected.type === 'seller') setSellers(upd); else setBuyers(upd);
           setSelected(prev => prev ? { ...prev, current_stage: idx, entered_stage: 0 } : null);
-          supabase.from('clients').update({ current_stage: idx, entered_stage: 0, updated_at: new Date().toISOString() }).eq('id', selected.id).then(() => {});
+          saveClient(selected.id, { current_stage: idx, entered_stage: 0 });
         }}
       />
       {pop && (
