@@ -13,6 +13,7 @@ import { Drawer } from './Drawer';
 import { CellPopover, PopoverState } from './CellPopover';
 import { DashboardView } from './DashboardView';
 import { InboxView } from './InboxView';
+import { ScrivenerView } from './ScrivenerView';
 
 function useLocalStorage<T>(key: string, initial: T): [T, (v: T) => void] {
   const [v, setV] = useState<T>(() => {
@@ -146,7 +147,9 @@ export function PipelineView() {
   return (
     <div className="app">
       <Sidebar activeView={view} onNav={setView} />
-      {view === 'clients' ? (
+      {view === 'scrivener' ? (
+        <ScrivenerView />
+      ) : view === 'clients' ? (
         <DashboardView sellers={sellers} buyers={buyers} />
       ) : ['pipeline', 'inbox', 'calendar', 'reports', 'automations'].includes(view) ? (
         <main className="main">

@@ -28,6 +28,9 @@ export function Sidebar({ activeView, onNav }: SidebarProps) {
       </button>
       <button className={`nav-item${activeView === 'calendar' ? ' active' : ''}`} onClick={() => onNav('calendar')}>{Icons.calendar}<span>Calendar</span></button>
 
+      <div className="nav-section">Contracts</div>
+      <button className={`nav-item${activeView === 'scrivener' ? ' active' : ''}`} onClick={() => onNav('scrivener')}>{Icons.scroll}<span>RE Scrivener</span></button>
+
       <div className="nav-section">Insights</div>
       <button className={`nav-item${activeView === 'reports' ? ' active' : ''}`} onClick={() => onNav('reports')}>{Icons.chart}<span>Reports</span></button>
       <button className={`nav-item${activeView === 'automations' ? ' active' : ''}`} onClick={() => onNav('automations')}>{Icons.bolt}<span>Automations</span></button>
