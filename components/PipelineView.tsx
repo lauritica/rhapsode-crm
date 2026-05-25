@@ -12,6 +12,7 @@ import { Pipeline } from './Pipeline';
 import { Drawer } from './Drawer';
 import { CellPopover, PopoverState } from './CellPopover';
 import { DashboardView } from './DashboardView';
+import { InboxView } from './InboxView';
 
 function useLocalStorage<T>(key: string, initial: T): [T, (v: T) => void] {
   const [v, setV] = useState<T>(() => {
@@ -165,6 +166,8 @@ export function PipelineView() {
       <Sidebar activeView={view} onNav={setView} />
       {view === 'dashboard' ? (
         <DashboardView sellers={sellers} buyers={buyers} />
+      ) : view === 'inbox' ? (
+        <InboxView />
       ) : (
         <main className="main">
           <Topbar query={query} setQuery={setQuery} />
