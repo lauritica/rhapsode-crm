@@ -166,9 +166,7 @@ export function PipelineView() {
       <Sidebar activeView={view} onNav={setView} />
       {view === 'pipeline' ? (
         <DashboardView sellers={sellers} buyers={buyers} />
-      ) : view === 'inbox' ? (
-        <InboxView />
-      ) : ['clients', 'calendar', 'reports', 'automations'].includes(view) ? (
+      ) : ['inbox', 'clients', 'calendar', 'reports', 'automations'].includes(view) ? (
         <main className="main">
           <div className="topbar">
             <div className="title-block">
