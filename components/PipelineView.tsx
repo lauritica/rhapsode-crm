@@ -168,6 +168,18 @@ export function PipelineView() {
         <DashboardView sellers={sellers} buyers={buyers} />
       ) : view === 'inbox' ? (
         <InboxView />
+      ) : ['clients', 'calendar', 'reports', 'automations'].includes(view) ? (
+        <main className="main">
+          <div className="topbar">
+            <div className="title-block">
+              <div className="crumb"><span>Workspace</span><i className="crumb-dot" /><span>{view.charAt(0).toUpperCase() + view.slice(1)}</span></div>
+              <h1>{view.charAt(0).toUpperCase() + view.slice(1)}</h1>
+            </div>
+          </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-mute)', fontSize: 13 }}>
+            Coming soon
+          </div>
+        </main>
       ) : (
         <main className="main">
           <Topbar query={query} setQuery={setQuery} />
@@ -196,6 +208,13 @@ export function PipelineView() {
         stages={stages}
         isSeller={tab === 'seller'}
         onClose={() => setSelected(null)}
+        onAdvance={(idx) => {
+          if (!selected) return;
+          const upd = (arr: Client[]) => arr.map(c => c.id === selected.id ? { ...c, current_stage: idx, entered_stage: 0 } : c);
+          if (selected.type === 'seller') setSellers(upd); else setBuyers(upd);
+          setSelected(prev => prev ? { ...prev, current_stage: idx, entered_stage: 0 } : null);
+          supabase.from('clients').update({ current_stage: idx, entered_stage: 0, updated_at: new Date().toISOString() }).eq('id', selected.id).then(() => {});
+        }}
       />
       {pop && (
         <CellPopover

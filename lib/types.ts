@@ -14,6 +14,8 @@ export interface Client {
   source: string;
   entered_stage: number; // days in current stage
   type: ClientType;
+  phone?: string;
+  email?: string;
   created_at?: string;
   updated_at?: string;
 }
