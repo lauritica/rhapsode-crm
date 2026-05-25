@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Rhapsode — Pipeline Timeline</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root {
+    /* Tweakable defaults */
+    --accent-h: 298;
+    --accent-c: 0.14;
+    --accent-l: 0.72;
+
+    /* Warm-tinted near-blacks with 300-hue purple tint */
+    --bg:        oklch(0.16 0.015 300);
+    --bg-1:      oklch(0.19 0.018 300);
+    --bg-2:      oklch(0.22 0.022 300);
+    --bg-3:      oklch(0.26 0.025 300);
+    --line:      oklch(0.30 0.020 300 / 0.7);
+    --line-soft: oklch(0.30 0.020 300 / 0.35);
+    --row-alt:   oklch(0.20 0.020 300 / 0.45);
+
+    --ink:       oklch(0.96 0.01 300);
+    --ink-dim:   oklch(0.72 0.015 300);
+    --ink-mute:  oklch(0.55 0.015 300);
+    --ink-faint: oklch(0.42 0.015 300);
+
+    --accent:      oklch(var(--accent-l) var(--accent-c) var(--accent-h));
+    --accent-soft: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.18);
+    --accent-wash: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.08);
+    --accent-strong: oklch(0.80 0.17 var(--accent-h));
+
+    /* Status — translucent glows */
+    --active:      oklch(0.78 0.16 148);
+    --active-bg:   oklch(0.60 0.14 148 / 0.28);
+    --active-edge: oklch(0.72 0.16 148 / 0.55);
+
+    --warming:      oklch(0.86 0.15 88);
+    --warming-bg:   oklch(0.72 0.14 78 / 0.26);
+    --warming-edge: oklch(0.80 0.15 78 / 0.55);
+
+    --cold:        oklch(0.78 0.16 22);
+    --cold-bg:     oklch(0.60 0.15 22 / 0.26);
+    --cold-edge:   oklch(0.72 0.16 22 / 0.55);
+
+    --empty-bg:    oklch(0.23 0.015 300 / 0.55);
+
+    --row-h: 48px;
+    --header-h: 44px;
+    --name-col: 260px;
+    --meta-col: 280px;
+
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; font-feature-settings: 'cv11','ss01','ss03'; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100vh; }
+
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input { font-family: inherit; }
+
+  .mono { font-family: 'JetBrains Mono', monospace; font-feature-settings: 'zero'; }
+
+  /* ===== Layout ===== */
+  .app {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: linear-gradient(180deg, var(--bg-1), var(--bg));
+    border-right: 1px solid var(--line-soft);
+    padding: 22px 16px;
+    display: flex; flex-direction: column; gap: 6px;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 22px; }
+  .brand-mark {
+    width: 28px; height: 28px; border-radius: 8px;
+    background:
+      radial-gradient(circle at 30% 30%, oklch(0.85 0.17 var(--accent-h)) 0%, oklch(0.55 0.18 var(--accent-h)) 60%, oklch(0.35 0.14 var(--accent-h)) 100%);
+    box-shadow: 0 0 0 1px oklch(0.90 0.10 var(--accent-h) / 0.4) inset, 0 6px 18px -6px oklch(0.60 0.20 var(--accent-h) / 0.6);
+    position: relative;
+  }
+  .brand-mark::after {
+    content:''; position:absolute; inset: 6px; border-radius: 3px;
+    background: oklch(0.98 0.02 var(--accent-h) / 0.85);
+    clip-path: polygon(0 100%, 25% 55%, 50% 78%, 75% 20%, 100% 65%, 100% 100%);
+  }
+  .brand-name { font-family: 'Instrument Serif', serif; font-size: 22px; letter-spacing: -0.01em; }
+  .brand-name i { color: var(--accent); font-style: italic; }
+
+  .nav-section { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); padding: 14px 10px 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: var(--radius-sm);
+    color: var(--ink-dim); font-size: 13.5px; font-weight: 500;
+    width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--bg-2); color: var(--ink); }
+  .nav-item.active { background: var(--accent-soft); color: var(--ink); box-shadow: inset 0 0 0 1px oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.25); }
+  .nav-item svg { width: 15px; height: 15px; opacity: 0.75; flex-shrink: 0; }
+  .nav-item.active svg { opacity: 1; color: var(--accent-strong); }
+  .nav-spacer { flex: 1; }
+  .nav-user { display: flex; align-items: center; gap: 10px; padding: 10px; border-top: 1px solid var(--line-soft); margin-top: 8px; }
+  .nav-user .avatar { width: 30px; height: 30px; border-radius: 50%; background: oklch(0.55 0.14 var(--accent-h)); display:grid; place-items:center; font-size: 12px; font-weight: 600; color: var(--ink); }
+  .nav-user-name { font-size: 13px; font-weight: 600; }
+  .nav-user-meta { font-size: 11px; color: var(--ink-mute); }
+
+  /* Main */
+  .main { min-width: 0; display: flex; flex-direction: column; }
+
+  .topbar {
+    display: flex; align-items: center; gap: 20px;
+    padding: 20px 28px 0;
+  }
+  .title-block h1 { margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 32px; letter-spacing: -0.01em; }
+  .title-block .crumb { font-size: 12px; color: var(--ink-mute); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 8px;}
+  .title-block .crumb span:last-child { color: var(--accent-strong); }
+  .title-block .crumb-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--ink-mute); }
+
+  .topbar-spacer { flex: 1; }
+  .search {
+    position: relative;
+    display: flex; align-items: center;
+    background: var(--bg-1);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    padding: 0 12px;
+    width: 280px;
+    height: 36px;
+  }
+  .search:focus-within { border-color: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.5); background: var(--bg-2); }
+  .search svg { width: 14px; height: 14px; color: var(--ink-mute); }
+  .search input { background: none; border: none; outline: none; color: var(--ink); font-size: 13px; flex: 1; padding: 0 8px; }
+  .search input::placeholder { color: var(--ink-mute); }
+  .search kbd { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-mute); background: var(--bg-3); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--line-soft); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 36px; padding: 0 14px; border-radius: var(--radius);
+    background: var(--bg-1); border: 1px solid var(--line-soft);
+    font-size: 13px; font-weight: 500; color: var(--ink-dim);
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--bg-2); color: var(--ink); }
+  .btn svg { width: 14px; height: 14px; }
+  .btn-primary {
+    background: linear-gradient(180deg, oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.35), oklch(calc(var(--accent-l) - 0.1) var(--accent-c) var(--accent-h) / 0.35));
+    color: var(--ink);
+    border-color: oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.4);
+    box-shadow: inset 0 1px 0 oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.4);
+  }
+  .btn-primary:hover { background: linear-gradient(180deg, oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.5), oklch(calc(var(--accent-l) - 0.1) var(--accent-c) var(--accent-h) / 0.5)); color: var(--ink); }
+
+  /* Tabs + sort */
+  .bar-row {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 24px 28px 0;
+    gap: 20px;
+  }
+  .tabs { display: flex; gap: 2px; background: var(--bg-1); padding: 4px; border-radius: var(--radius); border: 1px solid var(--line-soft); }
+  .tab {
+    padding: 8px 16px; border-radius: 7px;
+    font-size: 13px; font-weight: 500; color: var(--ink-mute);
+    display: flex; align-items: center; gap: 10px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: var(--ink-dim); }
+  .tab.active { background: var(--bg-3); color: var(--ink); box-shadow: 0 1px 0 oklch(1 0 0 / 0.05) inset, 0 2px 6px -2px oklch(0 0 0 / 0.4); }
+  .tab .count { font-family: 'JetBrains Mono', monospace; font-size: 11px; padding: 2px 6px; border-radius: 999px; background: var(--bg); color: var(--ink-dim); }
+  .tab.active .count { background: var(--accent-soft); color: var(--accent-strong); }
+
+  .sort-group { display: flex; align-items: center; gap: 6px; }
+  .sort-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-right: 6px; }
+  .chip {
+    padding: 7px 11px; border-radius: 7px;
+    font-size: 12px; color: var(--ink-mute); font-weight: 500;
+    border: 1px solid transparent;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .chip:hover { color: var(--ink-dim); background: var(--bg-1); }
+  .chip.active { color: var(--ink); background: var(--bg-2); border-color: var(--line-soft); }
+  .chip svg { width: 11px; height: 11px; }
+
+  /* KPI strip */
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 20px 28px 0; }
+  .kpi {
+    background: var(--bg-1);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    position: relative; overflow: hidden;
+  }
+  .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .kpi-label .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .kpi-value { font-family: 'Instrument Serif', serif; font-size: 30px; letter-spacing: -0.01em; line-height: 1; }
+  .kpi-delta { font-size: 11px; color: var(--ink-mute); margin-top: 6px; font-family: 'JetBrains Mono', monospace; }
+  .kpi-delta.up { color: var(--active); }
+  .kpi-delta.down { color: var(--cold); }
+  .kpi-sparkbar { height: 3px; background: var(--bg-3); border-radius: 999px; margin-top: 10px; overflow: hidden; }
+  .kpi-sparkbar i { display:block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), oklch(0.82 0.13 var(--accent-h))); }
+
+  /* ===== Pipeline Table ===== */
+  .pipeline-wrap {
+    margin: 24px 28px 28px;
+    background: var(--bg-1);
+    border: 1px solid var(--line-soft);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .pipeline-header {
+    display: grid;
+    grid-template-columns: var(--name-col) var(--meta-col) 1fr;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    height: var(--header-h);
+    align-items: stretch;
+  }
+  .pipeline-header .cell-h {
+    padding: 0 16px; display: flex; align-items: center;
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-mute); font-weight: 600;
+    border-right: 1px solid var(--line-soft);
+  }
+  .pipeline-header .cell-h:last-child { border-right: none; padding: 0; }
+
+  .stages {
+    display: grid;
+    height: 100%;
+  }
+  .stage-h {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-dim); font-weight: 600;
+    border-right: 1px solid var(--line-soft);
+    position: relative;
+    padding: 0 6px;
+    text-align: center;
+  }
+  .stage-h:last-child { border-right: none; }
+  .stage-h .idx { font-size: 9px; color: var(--ink-mute); font-family: 'JetBrains Mono', monospace; margin-bottom: 2px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: var(--name-col) var(--meta-col) 1fr;
+    height: var(--row-h);
+    border-bottom: 1px solid var(--line-soft);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .row:nth-child(even) { background: var(--row-alt); }
+  .row:hover { background: var(--accent-wash); }
+  .row:last-child { border-bottom: none; }
+
+  .name-cell {
+    display: flex; align-items: center; gap: 12px; padding: 0 16px;
+    border-right: 1px solid var(--line-soft);
+    min-width: 0;
+  }
+  .avatar-sm {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.08);
+  }
+  .name-stack { min-width: 0; }
+  .name { font-size: 13.5px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .name-sub { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-mute); letter-spacing: 0.02em; }
+
+  .meta-cell {
+    display: grid; grid-template-columns: 1fr auto; align-items: center;
+    padding: 0 16px; gap: 12px;
+    border-right: 1px solid var(--line-soft);
+    min-width: 0;
+  }
+  .address { font-size: 12px; color: var(--ink-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .last-contact { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); flex-shrink: 0; }
+  .last-contact.stale { color: var(--cold); }
+  .last-contact.warn { color: var(--warming); }
+
+  .row-next {
+    position: absolute; left: var(--name-col); top: 100%;
+    transform: translateY(-100%);
+    font-size: 10.5px; color: var(--ink-faint);
+    padding-left: 16px; display: none;
+  }
+
+  .stages-row {
+    display: grid;
+    height: 100%;
+    position: relative;
+  }
+  .cell {
+    border-right: 1px solid var(--line-soft);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .cell:last-child { border-right: none; }
+  .cell .cell-inner {
+    position: absolute; inset: 6px 0;
+    display: flex; align-items: center; justify-content: center;
+    gap: 5px;
+    pointer-events: none;
+  }
+
+  /* Bar segments */
+  .cell.bar { background: var(--empty-bg); }
+  .cell.bar.active { background: var(--active-bg); border-top: 1px solid var(--active-edge); border-bottom: 1px solid var(--active-edge); color: var(--active); }
+  .cell.bar.warming { background: var(--warming-bg); border-top: 1px solid var(--warming-edge); border-bottom: 1px solid var(--warming-edge); color: var(--warming); }
+  .cell.bar.cold { background: var(--cold-bg); border-top: 1px solid var(--cold-edge); border-bottom: 1px solid var(--cold-edge); color: var(--cold); }
+
+  .cell.bar.start { border-left: 1px solid currentColor; border-top-left-radius: 6px; border-bottom-left-radius: 6px; }
+  .cell.bar.end   { border-right: 1px solid currentColor; border-top-right-radius: 6px; border-bottom-right-radius: 6px; }
+
+  /* Current-stage marker */
+  .cell.current::before {
+    content: ''; position: absolute;
+    inset: 0 0 0 0;
+    background: radial-gradient(ellipse at center, currentColor 0%, transparent 70%);
+    opacity: 0.20; pointer-events: none;
+  }
+  .cell.current::after {
+    content: ''; position: absolute;
+    right: -5px; top: 50%; transform: translateY(-50%) rotate(45deg);
+    width: 10px; height: 10px;
+    background: currentColor;
+    box-shadow: 0 0 0 2px var(--bg-1), 0 0 10px currentColor;
+    z-index: 3;
+    border-radius: 2px;
+  }
+  .cell.current .cell-inner { color: oklch(0.98 0.02 var(--accent-h)); font-weight: 700; }
+  .cell.current.active .cell-inner { color: oklch(0.95 0.16 148); }
+  .cell.current.warming .cell-inner { color: oklch(0.95 0.14 88); }
+  .cell.current.cold .cell-inner { color: oklch(0.95 0.15 22); }
+
+  .cell:hover .cell-inner { transform: scale(1.06); transition: transform 0.15s; }
+  .cell.bar:hover { filter: brightness(1.15); }
+  .cell.bar.empty:hover { background: oklch(0.28 0.03 var(--accent-h) / 0.5); }
+
+  /* Footer */
+  .pipeline-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid var(--line-soft);
+    background: var(--bg);
+    font-size: 12px; color: var(--ink-mute);
+  }
+  .legend { display: flex; align-items: center; gap: 18px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 11.5px; }
+  .legend-swatch {
+    width: 24px; height: 12px; border-radius: 3px;
+    border-top: 1px solid currentColor; border-bottom: 1px solid currentColor;
+  }
+  .legend-swatch.active { background: var(--active-bg); color: var(--active); }
+  .legend-swatch.warming { background: var(--warming-bg); color: var(--warming); }
+  .legend-swatch.cold { background: var(--cold-bg); color: var(--cold); }
+  .legend-swatch.empty { background: var(--empty-bg); border-color: var(--line-soft); color: var(--line-soft); }
+  .legend-label { color: var(--ink-dim); }
+
+  /* ===== Drawer ===== */
+  .drawer-backdrop {
+    position: fixed; inset: 0;
+    background: oklch(0.08 0.01 300 / 0.5);
+    backdrop-filter: blur(3px);
+    z-index: 40;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+  .drawer {
+    position: fixed; right: 0; top: 0; bottom: 0;
+    width: 460px;
+    background: var(--bg-1);
+    border-left: 1px solid var(--line);
+    z-index: 41;
+    transform: translateX(100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.1, 1);
+    display: flex; flex-direction: column;
+    box-shadow: -20px 0 60px -20px oklch(0 0 0 / 0.5);
+  }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head {
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--line-soft);
+    display: flex; align-items: flex-start; gap: 16px;
+  }
+  .drawer-head .avatar { width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; font-size: 16px; font-weight: 600; flex-shrink: 0; box-shadow: inset 0 0 0 1px oklch(1 0 0 / 0.1); }
+  .drawer-head .close { margin-left: auto; color: var(--ink-mute); padding: 6px; border-radius: 6px; }
+  .drawer-head .close:hover { background: var(--bg-2); color: var(--ink); }
+  .drawer-title { font-family: 'Instrument Serif', serif; font-size: 26px; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .drawer-sub { font-size: 12px; color: var(--ink-mute); font-family: 'JetBrains Mono', monospace; }
+  .drawer-body { flex: 1; overflow-y: auto; padding: 20px 24px 24px; }
+
+  .drawer-status {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .drawer-status.active { background: var(--active-bg); color: var(--active); box-shadow: inset 0 0 0 1px var(--active-edge); }
+  .drawer-status.warming { background: var(--warming-bg); color: var(--warming); box-shadow: inset 0 0 0 1px var(--warming-edge); }
+  .drawer-status.cold { background: var(--cold-bg); color: var(--cold); box-shadow: inset 0 0 0 1px var(--cold-edge); }
+  .drawer-status .pulse { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.8s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; box-shadow: 0 0 8px currentColor; } }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 20px; margin-bottom: 24px; }
+  .detail-item .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-bottom: 5px; }
+  .detail-item .v { font-size: 13px; color: var(--ink); }
+  .detail-item .v.mono { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+
+  .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.09em; color: var(--ink-mute); font-weight: 600; margin: 24px 0 12px; display: flex; align-items: center; gap: 10px; }
+  .section-title::after { content:''; flex:1; height:1px; background: var(--line-soft); }
+
+  .timeline-list { display: flex; flex-direction: column; }
+  .timeline-item {
+    display: grid; grid-template-columns: 100px 1fr;
+    gap: 14px; align-items: baseline;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--line-soft);
+  }
+  .timeline-item:last-child { border-bottom: none; }
+  .ti-date { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-mute); }
+  .ti-event { font-size: 13px; color: var(--ink-dim); }
+  .ti-event b { color: var(--ink); font-weight: 500; }
+
+  .next-action {
+    background: var(--accent-wash);
+    border: 1px solid oklch(var(--accent-l) var(--accent-c) var(--accent-h) / 0.25);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
+  }
+  .next-action .icon { width: 28px; height: 28px; border-radius: 7px; background: var(--accent-soft); display: grid; place-items: center; color: var(--accent-strong); }
+  .next-action .icon svg { width: 14px; height: 14px; }
+  .next-action .label { font-size: 11px; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; }
+  .next-action .text { font-size: 13.5px; color: var(--ink); font-weight: 500; margin-top: 2px; }
+  .next-action .due { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--accent-strong); }
+
+  .drawer-actions {
+    padding: 14px 24px; border-top: 1px solid var(--line-soft);
+    display: flex; gap: 8px; background: var(--bg);
+  }
+  .drawer-actions .btn { flex: 1; justify-content: center; }
+
+  /* ===== Cell popover ===== */
+  .popover {
+    position: fixed; z-index: 50;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 14px;
+    width: 260px;
+    box-shadow: 0 20px 50px -20px oklch(0 0 0 / 0.6), 0 0 0 1px oklch(1 0 0 / 0.03) inset;
+    animation: pop-in 0.15s cubic-bezier(0.4,0,0.1,1);
+  }
+  @keyframes pop-in { from { opacity: 0; transform: translateY(-4px) scale(0.97); } to { opacity: 1; transform: none; } }
+  .popover-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); margin-bottom: 10px; }
+  .popover-title b { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 13px; }
+  .status-options { display: grid; gap: 4px; }
+  .status-opt {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 7px; width: 100%; text-align: left;
+    font-size: 13px; color: var(--ink-dim);
+  }
+  .status-opt:hover { background: var(--bg-3); color: var(--ink); }
+  .status-opt .swatch { width: 10px; height: 10px; border-radius: 3px; box-shadow: 0 0 0 1px currentColor; }
+  .status-opt.active-o { color: var(--active); }
+  .status-opt.warming-o { color: var(--warming); }
+  .status-opt.cold-o { color: var(--cold); }
+  .status-opt.empty-o { color: var(--ink-mute); }
+  .status-opt .k { flex: 1; color: inherit; font-weight: 500; }
+  .status-opt .hint { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--ink-mute); }
+  .popover-sep { height: 1px; background: var(--line-soft); margin: 10px 0; }
+  .popover-act { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; font-size: 12px; color: var(--ink-dim); width: 100%; text-align: left; }
+  .popover-act:hover { background: var(--bg-3); color: var(--ink); }
+  .popover-act svg { width: 12px; height: 12px; }
+
+  /* ===== Tweaks ===== */
+  .tweaks {
+    position: fixed; right: 20px; bottom: 20px;
+    width: 280px;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 30;
+    box-shadow: 0 20px 50px -20px oklch(0 0 0 / 0.7);
+    display: none;
+  }
+  .tweaks.open { display: block; }
+  .tweaks h3 { margin: 0 0 4px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .tweaks h3 .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .tweaks-sub { font-size: 11px; color: var(--ink-mute); margin-bottom: 14px; }
+  .tweak { margin-bottom: 12px; }
+  .tweak label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-mute); display: block; margin-bottom: 6px; }
+  .tweak .opts { display: flex; gap: 4px; background: var(--bg); border: 1px solid var(--line-soft); border-radius: 7px; padding: 3px; }
+  .tweak .opts button { flex: 1; padding: 5px 8px; border-radius: 5px; font-size: 11.5px; color: var(--ink-mute); }
+  .tweak .opts button.on { background: var(--bg-3); color: var(--ink); }
+  .tweak input[type=range] { width: 100%; accent-color: var(--accent); }
+  .tweak .row2 { display: flex; align-items: center; gap: 10px; }
+  .tweak .val { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-dim); min-width: 30px; text-align: right; }
+
+  /* Icons rendered as emoji in cells */
+  .cell-ico { font-size: 10px; display: inline-block; filter: saturate(1.2); }
+
+  /* Scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 6px; border: 2px solid transparent; background-clip: content-box; }
+  ::-webkit-scrollbar-thumb:hover { background: oklch(0.35 0.03 300); background-clip: content-box; }
+
+  /* Small-screen safety net — view is designed for >= 1280 */
+  @media (max-width: 1200px) {
+    :root { --name-col: 220px; --meta-col: 220px; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useMemo, useRef, useEffect } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "showCellLabels": true,
+  "density": "tight",
+  "continuousBar": true,
+  "showKPIs": true,
+  "accentHue": 298,
+  "statusPalette": "glow"
+}/*EDITMODE-END*/;
+
+// ============ DATA ============
+const SELLER_STAGES = [
+  { key: 'lead', label: 'Lead' },
+  { key: 'walkthrough', label: 'Walkthrough' },
+  { key: 'comps', label: 'Comps / Pricing' },
+  { key: 'reno', label: 'Reno Prep' },
+  { key: 'photos', label: 'Photos' },
+  { key: 'listed', label: 'Listed' },
+  { key: 'contract', label: 'Under Contract' },
+  { key: 'closed', label: 'Closed' },
+];
+
+const BUYER_STAGES = [
+  { key: 'lead', label: 'Lead' },
+  { key: 'consult', label: 'Consultation' },
+  { key: 'preapp', label: 'Pre-Approved' },
+  { key: 'showing', label: 'Actively Showing' },
+  { key: 'offer', label: 'Offer Made' },
+  { key: 'contract', label: 'Under Contract' },
+  { key: 'closed', label: 'Closed' },
+];
+
+// status: 'active' | 'warming' | 'cold'
+// currentIdx = 0-indexed into that pipeline's stages
+const SELLERS = [
+  { id: 's1', name: 'Alison Moody', address: '1472 Maplewood Dr', price: '$845K', lastContact: 2, status: 'active', current: 3 /* Reno Prep */, next: 'Approve contractor bid · Thu', agent: 'You', source: 'Referral · Sam P.', enteredStage: 6 },
+  { id: 's2', name: 'Angie Winters', address: '88 Heron Bay Ln', price: '$1.2M', lastContact: 1, status: 'active', current: 4 /* Photos */, next: 'Confirm photographer for Fri 10am', agent: 'You', source: 'Zillow Premier', enteredStage: 3 },
+  { id: 's3', name: 'Darnell Prescott', address: '2109 Cedar Grove Ct', price: '$560K', lastContact: 8, status: 'warming', current: 2 /* Comps */, next: 'Send comps deck + price band', agent: 'Marcus', source: 'Open house', enteredStage: 10 },
+  { id: 's4', name: 'Priya Chakravarty', address: '341 Beacon Hill Rd', price: '$2.4M', lastContact: 0, status: 'active', current: 5 /* Listed */, next: 'Review offer from 44 Oak', agent: 'You', source: 'Sphere', enteredStage: 4 },
+  { id: 's5', name: 'Marco Delacroix', address: '7 Willow Cove', price: '$695K', lastContact: 18, status: 'cold', current: 1 /* Walkthrough */, next: 'Follow up — 3rd attempt', agent: 'You', source: 'Facebook ad', enteredStage: 22 },
+  { id: 's6', name: 'Janelle Okoye', address: '1205 Summit Ridge', price: '$1.85M', lastContact: 3, status: 'active', current: 6 /* Under Contract */, next: 'Coordinate inspection Wed', agent: 'You', source: 'Past client', enteredStage: 7 },
+  { id: 's7', name: 'Reid Nakamura', address: '418 Bayview Ter', price: '$1.05M', lastContact: 5, status: 'warming', current: 2 /* Comps */, next: 'Walk pricing options', agent: 'Kira', source: 'Referral', enteredStage: 5 },
+  { id: 's8', name: 'Theresa Blalock', address: '92 Kestrel Pass', price: '$720K', lastContact: 12, status: 'cold', current: 0 /* Lead */, next: 'Book first call', agent: 'You', source: 'Website form', enteredStage: 12 },
+  { id: 's9', name: 'Hector Oduya', address: '3360 Larkspur Dr', price: '$985K', lastContact: 1, status: 'active', current: 7 /* Closed */, next: 'Send closing gift · Mon', agent: 'You', source: 'Referral · D. Vega', enteredStage: 2 },
+  { id: 's10', name: 'Maggie Forsythe', address: '55 Old Mill Rd', price: '$1.42M', lastContact: 6, status: 'warming', current: 4 /* Photos */, next: 'Stylist walkthrough Tue', agent: 'Jo', source: 'Sphere', enteredStage: 6 },
+];
+
+const BUYERS = [
+  { id: 'b1', name: 'Kira Lugo', address: 'Budget $650K · 3BR', price: '$650K', lastContact: 1, status: 'active', current: 0 /* Lead */, next: 'Send intro + book consult', agent: 'You', source: 'Instagram', enteredStage: 1 },
+  { id: 'b2', name: 'Lynda Terry', address: 'Budget $900K · East side', price: '$900K', lastContact: 0, status: 'active', current: 0 /* Lead */, next: 'Initial discovery call · Today 3pm', agent: 'You', source: 'Referral · M. Penn', enteredStage: 0 },
+  { id: 'b3', name: 'Dev Patel', address: 'Budget $1.1M · Townhome', price: '$1.1M', lastContact: 2, status: 'active', current: 3 /* Actively Showing */, next: 'Tour 3 homes Sat', agent: 'You', source: 'Past client', enteredStage: 9 },
+  { id: 'b4', name: 'Ophelia Marchetti', address: 'Budget $1.8M · Waterfront', price: '$1.8M', lastContact: 4, status: 'warming', current: 2 /* Pre-Approved */, next: 'Narrow neighborhoods', agent: 'Marcus', source: 'Luxury network', enteredStage: 11 },
+  { id: 'b5', name: 'Rashid Gilani', address: 'Budget $485K · First home', price: '$485K', lastContact: 2, status: 'active', current: 4 /* Offer Made */, next: 'Negotiate counter · 1921 Ash', agent: 'You', source: 'First-time buyer class', enteredStage: 3 },
+  { id: 'b6', name: 'Beatrix Caldwell', address: 'Budget $2.1M · Historic', price: '$2.1M', lastContact: 14, status: 'cold', current: 1 /* Consultation */, next: 'Re-engage with market update', agent: 'You', source: 'Website form', enteredStage: 19 },
+  { id: 'b7', name: 'Tomás Salcedo', address: 'Budget $775K · School district', price: '$775K', lastContact: 3, status: 'active', current: 5 /* Under Contract */, next: 'Order appraisal', agent: 'You', source: 'Sphere', enteredStage: 5 },
+  { id: 'b8', name: 'Winnie Halvorsen', address: 'Budget $540K · Condo', price: '$540K', lastContact: 9, status: 'warming', current: 3 /* Showing */, next: 'Send new listings · 5 matched', agent: 'Jo', source: 'Realtor.com', enteredStage: 7 },
+];
+
+const AVATAR_HUES = [20, 48, 95, 142, 175, 210, 255, 298, 335];
+function avatarFor(name){
+  const sum = [...name].reduce((a,c)=>a+c.charCodeAt(0),0);
+  const h = AVATAR_HUES[sum % AVATAR_HUES.length];
+  const init = name.split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  return { h, init };
+}
+
+const STATUS_META = {
+  active:  { label: 'On Fire', icon: '🔥' },
+  warming: { label: 'Warming', icon: '🌤' },
+  cold:    { label: 'Cold', icon: '🧊' },
+  empty:   { label: 'Empty', icon: '' },
+};
+
+// ============ ICONS ============
+const I = {
+  search: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>,
+  plus: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M8 3v10M3 8h10"/></svg>,
+  filter: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M2 3h12M4 8h8M6 13h4"/></svg>,
+  pipeline: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="5" height="8" rx="1"/><rect x="9" y="4" width="5" height="8" rx="1"/><path d="M4 7h1.5M4 9h1.5M11 7h1.5M11 9h1.5"/></svg>,
+  home: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 7l6-5 6 5v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7z"/></svg>,
+  users: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="6" cy="6" r="2.5"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4M11 7a2 2 0 1 0 0-4M10 13c0-1.5.8-2.8 2-3.4"/></svg>,
+  calendar: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="4" width="12" height="10" rx="1"/><path d="M5 2v3M11 2v3M2 7h12"/></svg>,
+  inbox: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 8v5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8M2 8l2-5h8l2 5M2 8h3l1 2h4l1-2h3"/></svg>,
+  spark: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 1v3M8 12v3M15 8h-3M4 8H1M12.5 3.5l-2 2M5.5 10.5l-2 2M12.5 12.5l-2-2M5.5 5.5l-2-2"/></svg>,
+  chart: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 14h12M4 11v-3M7 11V5M10 11V8M13 11V3"/></svg>,
+  gear: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="2"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3 3l1.5 1.5M11.5 11.5L13 13M3 13l1.5-1.5M11.5 4.5L13 3"/></svg>,
+  x: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M4 4l8 8M12 4l-8 8"/></svg>,
+  arrowUp: <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 10V2M3 5l3-3 3 3"/></svg>,
+  arrowDown: <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M6 2v8M3 7l3 3 3-3"/></svg>,
+  phone: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 3l3 1 1 3-2 1a7 7 0 0 0 3 3l1-2 3 1 1 3a2 2 0 0 1-2 2A11 11 0 0 1 1 5a2 2 0 0 1 2-2z"/></svg>,
+  mail: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 4l6 5 6-5"/></svg>,
+  note: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 2h8l3 3v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zM11 2v3h3"/></svg>,
+  check: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3 8l3 3 7-7"/></svg>,
+  bolt: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.2"><path d="M9 1L3 9h4l-1 6 6-8H8l1-6z"/></svg>,
+  tweak: <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M2 5h10M14 5h0M4 5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0M2 11h6M14 11h-2M9 11a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0"/></svg>,
+};
+
+// ============ HELPERS ============
+function useLocalStorage(key, initial) {
+  const [v, setV] = useState(() => {
+    try { const s = localStorage.getItem(key); return s ? JSON.parse(s) : initial; } catch { return initial; }
+  });
+  useEffect(() => { try { localStorage.setItem(key, JSON.stringify(v)); } catch {} }, [key, v]);
+  return [v, setV];
+}
+
+// ============ COMPONENTS ============
+
+function Sidebar() {
+  return (
+    <aside className="sidebar">
+      <div className="brand">
+        <div className="brand-mark" />
+        <div className="brand-name">R<i>h</i>apsode</div>
+      </div>
+      <div className="nav-section">Workspace</div>
+      <button className="nav-item">{I.home}<span>Dashboard</span></button>
+      <button className="nav-item active">{I.pipeline}<span>Pipeline</span></button>
+      <button className="nav-item">{I.users}<span>Clients</span></button>
+      <button className="nav-item">{I.inbox}<span>Inbox</span><span style={{marginLeft:'auto',fontFamily:'JetBrains Mono',fontSize:10,color:'var(--accent-strong)'}}>7</span></button>
+      <button className="nav-item">{I.calendar}<span>Calendar</span></button>
+      <div className="nav-section">Insights</div>
+      <button className="nav-item">{I.chart}<span>Reports</span></button>
+      <button className="nav-item">{I.bolt}<span>Automations</span></button>
+      <div className="nav-spacer"/>
+      <div className="nav-user">
+        <div className="avatar">JD</div>
+        <div>
+          <div className="nav-user-name">Jordan Davies</div>
+          <div className="nav-user-meta">Lead Broker</div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function Topbar({ query, setQuery }) {
+  return (
+    <div className="topbar">
+      <div className="title-block">
+        <div className="crumb"><span>Workspace</span><i className="crumb-dot"/><span>Pipeline</span></div>
+        <h1>Pipeline Timeline</h1>
+      </div>
+      <div className="topbar-spacer"/>
+      <div className="search">
+        {I.search}
+        <input placeholder="Search clients, addresses…" value={query} onChange={e=>setQuery(e.target.value)} />
+        <kbd>⌘K</kbd>
+      </div>
+      <button className="btn">{I.filter}<span>Filter</span></button>
+      <button className="btn btn-primary">{I.plus}<span>New Client</span></button>
+    </div>
+  );
+}
+
+function KPIs({ sellers, buyers }) {
+  const all = [...sellers, ...buyers];
+  const active = all.filter(c => c.status === 'active').length;
+  const warming = all.filter(c => c.status === 'warming').length;
+  const cold = all.filter(c => c.status === 'cold').length;
+  // Pipeline value — sum sellers with list price + buyers with budget, cheeky $ total
+  const totalM = 18.4;
+  return (
+    <div className="kpis">
+      <div className="kpi">
+        <div className="kpi-label"><span className="dot" style={{background:'var(--active)'}}/>Active deals</div>
+        <div className="kpi-value">{active}<span style={{color:'var(--ink-mute)',fontSize:18,marginLeft:6}}>/ {all.length}</span></div>
+        <div className="kpi-delta up">▲ 3 vs last week</div>
+        <div className="kpi-sparkbar"><i style={{width: (active/all.length*100)+'%'}}/></div>
+      </div>
+      <div className="kpi">
+        <div className="kpi-label"><span className="dot" style={{background:'var(--warming)'}}/>Warming · Cold</div>
+        <div className="kpi-value">{warming}<span style={{color:'var(--ink-mute)',fontSize:18,margin:'0 6px'}}>·</span>{cold}</div>
+        <div className="kpi-delta">{cold} need follow-up today</div>
+        <div className="kpi-sparkbar"><i style={{width: '55%', background:'linear-gradient(90deg, var(--warming), var(--cold))'}}/></div>
+      </div>
+      <div className="kpi">
+        <div className="kpi-label"><span className="dot" style={{background:'var(--accent-strong)'}}/>Pipeline value</div>
+        <div className="kpi-value mono">${totalM}M</div>
+        <div className="kpi-delta up">▲ $2.1M this month</div>
+        <div className="kpi-sparkbar"><i style={{width:'72%'}}/></div>
+      </div>
+      <div className="kpi">
+        <div className="kpi-label"><span className="dot" style={{background:'oklch(0.82 0.14 220)'}}/>Closing · next 30d</div>
+        <div className="kpi-value">4<span style={{color:'var(--ink-mute)',fontSize:18,marginLeft:6}}>deals</span></div>
+        <div className="kpi-delta">$4.8M projected</div>
+        <div className="kpi-sparkbar"><i style={{width:'40%', background:'linear-gradient(90deg, oklch(0.82 0.14 220), var(--accent))'}}/></div>
+      </div>
+    </div>
+  );
+}
+
+function TabsRow({ tab, setTab, sellerCount, buyerCount, sort, setSort }) {
+  return (
+    <div className="bar-row">
+      <div className="tabs">
+        <button className={'tab' + (tab==='seller'?' active':'')} onClick={()=>setTab('seller')}>
+          <span>Sellers</span>
+          <span className="count mono">{sellerCount}</span>
+        </button>
+        <button className={'tab' + (tab==='buyer'?' active':'')} onClick={()=>setTab('buyer')}>
+          <span>Buyers</span>
+          <span className="count mono">{buyerCount}</span>
+        </button>
+      </div>
+      <div className="sort-group">
+        <span className="sort-label">Sort</span>
+        <button className={'chip' + (sort==='stage'?' active':'')} onClick={()=>setSort('stage')}>By stage</button>
+        <button className={'chip' + (sort==='hottest'?' active':'')} onClick={()=>setSort('hottest')}>Hottest 🔥</button>
+        <button className={'chip' + (sort==='stalest'?' active':'')} onClick={()=>setSort('stalest')}>Stalest 🧊</button>
+        <button className={'chip' + (sort==='name'?' active':'')} onClick={()=>setSort('name')}>A–Z</button>
+      </div>
+    </div>
+  );
+}
+
+function Cell({ client, stageIdx, totalStages, showLabels, continuousBar, onClick, cellRef }) {
+  const curr = client.current;
+  const status = client.status;
+
+  // 'bar' segment logic
+  let cls = 'cell bar';
+  let filled = false;
+
+  if (continuousBar) {
+    if (stageIdx < curr) { filled = true; cls += ' ' + status + ' past'; }
+    else if (stageIdx === curr) { filled = true; cls += ' ' + status + ' current'; }
+    else { cls += ' empty'; }
+
+    // rounded edges
+    // find the prev filled and next filled
+    if (filled) {
+      const prevFilled = stageIdx > 0 && (stageIdx - 1 < curr || stageIdx - 1 === curr);
+      const nextFilled = stageIdx < curr;
+      if (!prevFilled) cls += ' start';
+      if (!nextFilled) cls += ' end';
+    }
+  } else {
+    if (stageIdx === curr) { filled = true; cls += ' ' + status + ' current start end'; }
+    else { cls += ' empty'; }
+  }
+
+  const isCurrent = stageIdx === curr;
+  const daysInStage = client.enteredStage || 0;
+  const icon = STATUS_META[status].icon;
+
+  return (
+    <div
+      ref={cellRef}
+      className={cls}
+      onClick={(e) => { e.stopPropagation(); onClick(e, client, stageIdx); }}
+    >
+      <div className="cell-inner">
+        {filled && showLabels && isCurrent && (
+          <>
+            <span className="cell-ico">{icon}</span>
+            <span className="mono">{daysInStage}d</span>
+          </>
+        )}
+        {filled && showLabels && !isCurrent && !continuousBar && (
+          <span className="cell-ico">{icon}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Row({ client, stages, showLabels, continuousBar, onRowClick, onCellClick }) {
+  const av = avatarFor(client.name);
+  const lcCls = client.lastContact >= 14 ? 'stale' : client.lastContact >= 7 ? 'warn' : '';
+  const lcLabel = client.lastContact === 0 ? 'today' : client.lastContact === 1 ? '1d ago' : client.lastContact + 'd ago';
+
+  return (
+    <div className="row" onClick={() => onRowClick(client)}>
+      <div className="name-cell">
+        <div className="avatar-sm" style={{ background: `oklch(0.55 0.14 ${av.h})`, color: `oklch(0.98 0.03 ${av.h})` }}>{av.init}</div>
+        <div className="name-stack">
+          <div className="name">{client.name}</div>
+          <div className="name-sub">{client.price} · {client.agent}</div>
+        </div>
+      </div>
+      <div className="meta-cell">
+        <div className="address" title={client.address}>{client.address}</div>
+        <div className={'last-contact ' + lcCls}>{lcLabel}</div>
+      </div>
+      <div className="stages-row" style={{ gridTemplateColumns: `repeat(${stages.length}, 1fr)` }}>
+        {stages.map((s, idx) => (
+          <Cell
+            key={s.key}
+            client={client}
+            stageIdx={idx}
+            totalStages={stages.length}
+            showLabels={showLabels}
+            continuousBar={continuousBar}
+            onClick={onCellClick}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Pipeline({ stages, clients, showLabels, continuousBar, onRowClick, onCellClick }) {
+  return (
+    <div className="pipeline-wrap">
+      <div className="pipeline-header">
+        <div className="cell-h">Client</div>
+        <div className="cell-h" style={{ justifyContent: 'space-between' }}>
+          <span>{stages === SELLER_STAGES ? 'Property · Last Contact' : 'Criteria · Last Contact'}</span>
+        </div>
+        <div className="stages" style={{ gridTemplateColumns: `repeat(${stages.length}, 1fr)` }}>
+          {stages.map((s, i) => (
+            <div className="stage-h" key={s.key}>
+              <div className="idx">{String(i+1).padStart(2,'0')}</div>
+              <div>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        {clients.map(c => (
+          <Row
+            key={c.id}
+            client={c}
+            stages={stages}
+            showLabels={showLabels}
+            continuousBar={continuousBar}
+            onRowClick={onRowClick}
+            onCellClick={onCellClick}
+          />
+        ))}
+      </div>
+      <div className="pipeline-footer">
+        <div className="legend">
+          <span className="legend-item"><span className="legend-swatch active"/><span className="legend-label">On Fire 🔥</span></span>
+          <span className="legend-item"><span className="legend-swatch warming"/><span className="legend-label">Warming 🌤</span></span>
+          <span className="legend-item"><span className="legend-swatch cold"/><span className="legend-label">Cold 🧊</span></span>
+          <span className="legend-item"><span className="legend-swatch empty"/><span className="legend-label">Not yet</span></span>
+        </div>
+        <div className="mono" style={{fontSize:11}}>Showing {clients.length} · Click row for details · Click cell to update</div>
+      </div>
+    </div>
+  );
+}
+
+// Drawer
+function Drawer({ client, stages, onClose, onPatch }) {
+  if (!client) return null;
+  const av = avatarFor(client.name);
+  const stage = stages[client.current];
+  const sm = STATUS_META[client.status];
+
+  const timeline = [
+    { d: 'Today', e: <>Logged <b>next step</b>: {client.next}</> },
+    { d: 'Yesterday', e: <>Moved to <b>{stage.label}</b> stage</> },
+    { d: '3 days ago', e: <>Call · {client.agent} · <b>22 min</b></> },
+    { d: '1 week ago', e: <>Email · sent market update</> },
+    { d: '2 weeks ago', e: <>Added to pipeline · {client.source}</> },
+  ];
+
+  return (
+    <>
+      <div className={'drawer-backdrop' + (client?' open':'')} onClick={onClose}/>
+      <div className={'drawer' + (client?' open':'')}>
+        <div className="drawer-head">
+          <div className="avatar" style={{ background: `oklch(0.55 0.14 ${av.h})`, color: `oklch(0.98 0.03 ${av.h})` }}>{av.init}</div>
+          <div style={{flex:1,minWidth:0}}>
+            <div className="drawer-title">{client.name}</div>
+            <div className="drawer-sub">{client.address}</div>
+          </div>
+          <button className="close" onClick={onClose}>{I.x}</button>
+        </div>
+        <div className="drawer-body">
+          <div className={'drawer-status ' + client.status}><span className="pulse"/>{sm.icon} {sm.label} · {stage.label}</div>
+
+          <div className="next-action">
+            <div className="icon">{I.bolt}</div>
+            <div>
+              <div className="label">Next action</div>
+              <div className="text">{client.next}</div>
+            </div>
+            <div className="due">GO →</div>
+          </div>
+
+          <div className="section-title">Details</div>
+          <div className="detail-grid">
+            <div className="detail-item"><div className="k">{stages === SELLER_STAGES ? 'List price' : 'Budget'}</div><div className="v mono">{client.price}</div></div>
+            <div className="detail-item"><div className="k">Days in stage</div><div className="v mono">{client.enteredStage}d</div></div>
+            <div className="detail-item"><div className="k">Agent</div><div className="v">{client.agent}</div></div>
+            <div className="detail-item"><div className="k">Source</div><div className="v">{client.source}</div></div>
+          </div>
+
+          <div className="section-title">Activity timeline</div>
+          <div className="timeline-list">
+            {timeline.map((t, i) => (
+              <div className="timeline-item" key={i}>
+                <div className="ti-date">{t.d}</div>
+                <div className="ti-event">{t.e}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="drawer-actions">
+          <button className="btn">{I.phone}<span>Call</span></button>
+          <button className="btn">{I.mail}<span>Email</span></button>
+          <button className="btn">{I.note}<span>Note</span></button>
+          <button className="btn btn-primary">{I.check}<span>Advance</span></button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// Cell popover
+function Popover({ pop, stages, onClose, onSet, onAdvance }) {
+  if (!pop) return null;
+  const stage = stages[pop.stageIdx];
+  const pad = 8;
+  const style = { left: Math.min(pop.x, window.innerWidth - 260 - pad), top: pop.y + pad };
+  useEffect(() => {
+    const onDoc = (e) => {
+      // ignore clicks inside the popover
+      if (e.target.closest('.popover')) return;
+      onClose();
+    };
+    setTimeout(() => document.addEventListener('click', onDoc), 0);
+    return () => document.removeEventListener('click', onDoc);
+  }, [onClose]);
+
+  return (
+    <div className="popover" style={style}>
+      <div className="popover-title">Log for <b>{pop.client.name}</b></div>
+      <div style={{fontSize:11, color:'var(--ink-mute)', marginBottom:10}}>Stage: <span style={{color:'var(--ink-dim)'}}>{stage.label}</span></div>
+      <div className="status-options">
+        <button className="status-opt active-o" onClick={()=>onSet('active')}>
+          <span className="swatch" style={{background:'var(--active-bg)'}}/>
+          <span className="k">On Fire 🔥</span>
+          <span className="hint">1</span>
+        </button>
+        <button className="status-opt warming-o" onClick={()=>onSet('warming')}>
+          <span className="swatch" style={{background:'var(--warming-bg)'}}/>
+          <span className="k">Warming 🌤</span>
+          <span className="hint">2</span>
+        </button>
+        <button className="status-opt cold-o" onClick={()=>onSet('cold')}>
+          <span className="swatch" style={{background:'var(--cold-bg)'}}/>
+          <span className="k">Cold 🧊</span>
+          <span className="hint">3</span>
+        </button>
+      </div>
+      <div className="popover-sep"/>
+      <button className="popover-act" onClick={()=>onAdvance(pop.stageIdx)}>{I.check}<span>Move to this stage</span></button>
+      <button className="popover-act">{I.phone}<span>Log call</span></button>
+      <button className="popover-act">{I.note}<span>Add note</span></button>
+    </div>
+  );
+}
+
+// Tweaks
+function Tweaks({ tweaks, setTweaks, editMode }) {
+  if (!editMode) return null;
+  const set = (patch) => {
+    const next = { ...tweaks, ...patch };
+    setTweaks(next);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+  };
+  return (
+    <div className="tweaks open">
+      <h3><span className="dot"/>Tweaks</h3>
+      <div className="tweaks-sub">Live changes. Persist on save.</div>
+
+      <div className="tweak">
+        <label>Timeline style</label>
+        <div className="opts">
+          <button className={tweaks.continuousBar?'on':''} onClick={()=>set({continuousBar:true})}>Continuous bar</button>
+          <button className={!tweaks.continuousBar?'on':''} onClick={()=>set({continuousBar:false})}>Current only</button>
+        </div>
+      </div>
+
+      <div className="tweak">
+        <label>Cell labels</label>
+        <div className="opts">
+          <button className={tweaks.showCellLabels?'on':''} onClick={()=>set({showCellLabels:true})}>Icon + days</button>
+          <button className={!tweaks.showCellLabels?'on':''} onClick={()=>set({showCellLabels:false})}>Color only</button>
+        </div>
+      </div>
+
+      <div className="tweak">
+        <label>KPI strip</label>
+        <div className="opts">
+          <button className={tweaks.showKPIs?'on':''} onClick={()=>set({showKPIs:true})}>Show</button>
+          <button className={!tweaks.showKPIs?'on':''} onClick={()=>set({showKPIs:false})}>Hide</button>
+        </div>
+      </div>
+
+      <div className="tweak">
+        <label>Accent hue <span className="val mono">{tweaks.accentHue}°</span></label>
+        <div className="row2">
+          <input type="range" min="260" max="340" value={tweaks.accentHue} onChange={e=>set({accentHue:Number(e.target.value)})}/>
+        </div>
+      </div>
+
+      <div className="tweak">
+        <label>Density</label>
+        <div className="opts">
+          <button className={tweaks.density==='tight'?'on':''} onClick={()=>set({density:'tight'})}>Tight</button>
+          <button className={tweaks.density==='medium'?'on':''} onClick={()=>set({density:'medium'})}>Medium</button>
+          <button className={tweaks.density==='comfortable'?'on':''} onClick={()=>set({density:'comfortable'})}>Comfy</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============ APP ============
+function App() {
+  const [tab, setTab] = useLocalStorage('rhap.tab', 'seller');
+  const [sort, setSort] = useLocalStorage('rhap.sort', 'stage');
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState(null);
+  const [pop, setPop] = useState(null);
+  const [sellers, setSellers] = useState(SELLERS);
+  const [buyers, setBuyers] = useState(BUYERS);
+  const [tweaks, setTweaks] = useState(TWEAK_DEFAULTS);
+  const [editMode, setEditMode] = useState(false);
+
+  // Edit mode wiring
+  useEffect(() => {
+    const onMsg = (e) => {
+      if (!e.data || !e.data.type) return;
+      if (e.data.type === '__activate_edit_mode') setEditMode(true);
+      if (e.data.type === '__deactivate_edit_mode') setEditMode(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  // apply tweaks to :root
+  useEffect(() => {
+    const r = document.documentElement;
+    r.style.setProperty('--accent-h', tweaks.accentHue);
+    const h = { tight: 36, medium: 48, comfortable: 60 }[tweaks.density] || 48;
+    r.style.setProperty('--row-h', h + 'px');
+  }, [tweaks]);
+
+  const stages = tab === 'seller' ? SELLER_STAGES : BUYER_STAGES;
+  const baseList = tab === 'seller' ? sellers : buyers;
+
+  const clients = useMemo(() => {
+    let arr = baseList;
+    if (query.trim()) {
+      const q = query.toLowerCase();
+      arr = arr.filter(c => c.name.toLowerCase().includes(q) || c.address.toLowerCase().includes(q));
+    }
+    const statusRank = { active: 0, warming: 1, cold: 2 };
+    const copy = [...arr];
+    if (sort === 'stage') copy.sort((a,b) => b.current - a.current || statusRank[a.status]-statusRank[b.status]);
+    if (sort === 'hottest') copy.sort((a,b) => statusRank[a.status]-statusRank[b.status] || a.lastContact - b.lastContact);
+    if (sort === 'stalest') copy.sort((a,b) => b.lastContact - a.lastContact);
+    if (sort === 'name') copy.sort((a,b) => a.name.localeCompare(b.name));
+    return copy;
+  }, [baseList, query, sort]);
+
+  const onRowClick = (c) => setSelected(c);
+
+  const onCellClick = (e, client, stageIdx) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPop({ client, stageIdx, x: rect.left + rect.width/2 - 130, y: rect.bottom });
+  };
+
+  const patchClient = (patch) => {
+    const upd = (arr) => arr.map(c => c.id === pop.client.id ? { ...c, ...patch } : c);
+    if (tab === 'seller') setSellers(upd); else setBuyers(upd);
+  };
+
+  const setStatus = (status) => { patchClient({ status }); setPop(null); };
+  const advanceTo = (idx) => { patchClient({ current: idx, enteredStage: 0 }); setPop(null); };
+
+  // Keyboard close
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') { setSelected(null); setPop(null); } };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  return (
+    <div className="app">
+      <Sidebar />
+      <main className="main">
+        <Topbar query={query} setQuery={setQuery}/>
+        {tweaks.showKPIs && <KPIs sellers={sellers} buyers={buyers}/>}
+        <TabsRow tab={tab} setTab={setTab} sellerCount={sellers.length} buyerCount={buyers.length} sort={sort} setSort={setSort}/>
+        <Pipeline
+          stages={stages}
+          clients={clients}
+          showLabels={tweaks.showCellLabels}
+          continuousBar={tweaks.continuousBar}
+          onRowClick={onRowClick}
+          onCellClick={onCellClick}
+        />
+      </main>
+      <Drawer client={selected} stages={stages} onClose={()=>setSelected(null)}/>
+      {pop && <Popover pop={pop} stages={stages} onClose={()=>setPop(null)} onSet={setStatus} onAdvance={advanceTo}/>}
+      <Tweaks tweaks={tweaks} setTweaks={setTweaks} editMode={editMode}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

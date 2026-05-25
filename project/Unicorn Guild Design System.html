@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Unicorn Guild — Design System v1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,500&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  /* ===================================================================
+     UNICORN GUILD / LAURA RAO — DESIGN SYSTEM v1
+     Editorial-zine-meets-neighborly-guide.
+     Magical realism · Latina · community-rooted · rebellious professionalism.
+     =================================================================== */
+
+  :root {
+    /* ——— EARTH (primary grounding) ——— */
+    --cream:          #F6F0E6;   /* page background, paper */
+    --cream-deep:     #EFE7D7;   /* card bg, subtle sections */
+    --bone:           #FBF6EC;   /* hero backgrounds */
+    --clay:           #C95E3E;   /* terracotta, primary accent */
+    --clay-deep:      #9C3F24;   /* hover/pressed clay, headlines pop */
+    --clay-pale:      #F2D8CC;   /* clay tints, badges */
+
+    /* ——— COSTA RICA / YELLOW SPRINGS ——— */
+    --moss:           #4B6B3E;   /* forest green, ~"si se puede" green */
+    --moss-deep:      #2E4529;
+    --moss-pale:      #D5DCC3;
+    --sky:            #7FA6B8;   /* Yellow Springs morning sky */
+    --sky-deep:       #4F7B92;
+    --sky-pale:       #D8E3E7;
+
+    /* ——— WARM NEUTRALS / INK ——— */
+    --espresso:       #1F1713;   /* body text, near-black with warmth */
+    --espresso-2:     #4A3C34;   /* secondary ink */
+    --espresso-3:     #7B6A5E;   /* muted, captions */
+    --espresso-4:     #B0A091;   /* dividers, placeholders */
+    --line:           #2018130f; /* hairline dividers on cream */
+
+    /* ——— MURAL-PAINT ACCENTS (handwritten highlighter hits, use sparingly) ——— */
+    --highlighter:    #F4C95D;   /* warm yellow — the "highlighter" */
+    --marigold:       #E38B2E;   /* marigold, call-outs */
+    --plum:           #7A3E5E;   /* literary plum, italic emphasis */
+    --rose:           #D26B6B;   /* warm dusty rose */
+
+    /* ——— FOCUS / STATE ——— */
+    --focus-ring:     #C95E3E55;
+
+    /* ——— TYPE ——— */
+    --serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --sans:  'Figtree', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --hand:  'Caveat', 'Segoe Script', cursive;
+
+    /* ——— RHYTHM ——— */
+    --gutter: clamp(24px, 4vw, 56px);
+    --rule: 1px solid var(--line);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--cream);
+    color: var(--espresso);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Subtle paper texture via layered gradients — no heavy image */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background:
+      radial-gradient(ellipse at 20% 10%, #D8BFA533 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 90%, #C95E3E22 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 50%, transparent 60%, #1F171308 100%);
+    z-index: -1;
+  }
+
+  .page { max-width: 1120px; margin: 0 auto; padding: 0 var(--gutter); }
+
+  /* ========================================================
+     MASTHEAD
+     ======================================================== */
+  .masthead {
+    padding: 72px 0 48px;
+    border-bottom: var(--rule);
+  }
+  .masthead .issue-line {
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--espresso-3);
+    margin-bottom: 24px;
+  }
+  .masthead .issue-line .divider {
+    flex: 1; height: 1px; background: var(--espresso-4); opacity: 0.5;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 500;
+    font-size: clamp(52px, 8vw, 96px);
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    color: var(--espresso);
+    max-width: 900px;
+    text-wrap: balance;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: var(--clay);
+  }
+  .masthead h1 .hand {
+    font-family: var(--hand);
+    font-weight: 600;
+    color: var(--clay-deep);
+    font-style: normal;
+    font-size: 0.85em;
+    position: relative;
+    top: -0.05em;
+  }
+  .masthead .kicker {
+    margin-top: 28px;
+    max-width: 640px;
+    font-size: 19px;
+    color: var(--espresso-2);
+    line-height: 1.55;
+  }
+  .masthead .sig-row {
+    margin-top: 36px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-top: 24px;
+    border-top: var(--rule);
+  }
+  .masthead .sig-avatar {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--clay) 0%, var(--marigold) 100%);
+    display: grid; place-items: center;
+    color: var(--bone); font-family: var(--serif); font-weight: 600; font-size: 19px;
+    font-style: italic;
+  }
+  .masthead .sig-text { font-size: 14px; color: var(--espresso-2); }
+  .masthead .sig-text b { font-weight: 600; }
+  .masthead .sig-text .muted { color: var(--espresso-3); }
+
+  /* ========================================================
+     SECTION SHELL
+     ======================================================== */
+  section { padding: 72px 0; border-bottom: var(--rule); }
+  .section-head {
+    display: flex; align-items: baseline; gap: 24px;
+    margin-bottom: 40px;
+  }
+  .section-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 48px;
+    color: var(--clay);
+    line-height: 1;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 36px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    flex: 1;
+    text-wrap: balance;
+  }
+  .section-title em { font-style: italic; color: var(--plum); }
+  .section-lede {
+    max-width: 640px;
+    font-size: 18px;
+    color: var(--espresso-2);
+    margin-bottom: 40px;
+    margin-top: -16px;
+  }
+
+  /* ========================================================
+     COLOR PALETTE
+     ======================================================== */
+  .palette-group {
+    margin-bottom: 40px;
+  }
+  .palette-group-title {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--espresso-3);
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .palette-group-title::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--espresso-4);
+    opacity: 0.4;
+  }
+  .palette-group-title .meta {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 14px;
+    color: var(--espresso-3);
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+  .swatch {
+    border-radius: 10px;
+    overflow: hidden;
+    border: var(--rule);
+    background: var(--bone);
+  }
+  .swatch .chip {
+    height: 104px;
+    display: flex; align-items: flex-end;
+    padding: 12px 14px;
+    color: var(--bone);
+    font-family: var(--hand);
+    font-weight: 600;
+    font-size: 20px;
+  }
+  .swatch .chip.dark { color: var(--espresso); }
+  .swatch .meta {
+    padding: 10px 14px 12px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 10px;
+  }
+  .swatch .meta .name {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--espresso);
+  }
+  .swatch .meta .hex {
+    font-family: 'SF Mono', ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--espresso-3);
+    letter-spacing: 0.02em;
+  }
+
+  /* ========================================================
+     TYPOGRAPHY
+     ======================================================== */
+  .type-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .type-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 24px;
+    align-items: baseline;
+    padding: 22px 0;
+    border-top: var(--rule);
+  }
+  .type-row:first-child { border-top: 0; padding-top: 0; }
+  .type-spec {
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--espresso-3);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .type-spec .label { color: var(--espresso); font-weight: 600; display: block; margin-bottom: 4px; }
+  .type-spec .details { font-family: 'SF Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0; text-transform: none; line-height: 1.55; }
+
+  .t-h1 {
+    font-family: var(--serif); font-variation-settings: 'opsz' 144;
+    font-weight: 500; font-size: 64px; line-height: 1.02; letter-spacing: -0.015em;
+  }
+  .t-h2 {
+    font-family: var(--serif); font-variation-settings: 'opsz' 72;
+    font-weight: 500; font-size: 42px; line-height: 1.08; letter-spacing: -0.01em;
+  }
+  .t-h3 {
+    font-family: var(--serif); font-variation-settings: 'opsz' 36;
+    font-weight: 500; font-size: 28px; line-height: 1.15;
+  }
+  .t-lede {
+    font-family: var(--sans); font-weight: 400; font-size: 22px; line-height: 1.45;
+    color: var(--espresso-2); max-width: 540px;
+  }
+  .t-body {
+    font-family: var(--sans); font-weight: 400; font-size: 17px; line-height: 1.6;
+    color: var(--espresso); max-width: 540px;
+  }
+  .t-caption {
+    font-family: var(--sans); font-weight: 500; font-size: 13px; line-height: 1.5;
+    color: var(--espresso-3); letter-spacing: 0.01em;
+  }
+  .t-label {
+    font-family: var(--sans); font-weight: 700; font-size: 11.5px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--espresso-3);
+  }
+  .t-hand {
+    font-family: var(--hand); font-weight: 600; font-size: 32px; line-height: 1.1;
+    color: var(--clay-deep);
+  }
+  .t-body em { font-style: italic; color: var(--plum); }
+
+  /* ========================================================
+     BUTTONS
+     ======================================================== */
+  .btn-grid {
+    display: flex; flex-wrap: wrap; gap: 16px 20px;
+    align-items: center;
+  }
+  .btn {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 15.5px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+    text-decoration: none;
+    letter-spacing: 0.005em;
+  }
+  .btn:active { transform: translateY(1px); }
+
+  .btn-primary {
+    background: var(--clay); color: var(--bone);
+    border-color: var(--clay);
+  }
+  .btn-primary:hover { background: var(--clay-deep); border-color: var(--clay-deep); }
+
+  .btn-secondary {
+    background: transparent; color: var(--espresso);
+    border-color: var(--espresso);
+  }
+  .btn-secondary:hover { background: var(--espresso); color: var(--bone); }
+
+  .btn-ghost {
+    background: transparent; color: var(--espresso-2);
+    border-color: var(--espresso-4);
+  }
+  .btn-ghost:hover { background: var(--cream-deep); color: var(--espresso); border-color: var(--espresso-3); }
+
+  .btn-link {
+    background: transparent; color: var(--clay-deep);
+    border: none;
+    padding: 10px 0;
+    font-size: 16px;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 5px;
+    text-decoration-color: var(--clay-pale);
+  }
+  .btn-link:hover { text-decoration-color: var(--clay); }
+
+  .btn .arrow {
+    font-family: var(--serif); font-style: italic; font-weight: 500;
+    font-size: 1.1em;
+  }
+
+  /* ========================================================
+     CARDS / EDITORIAL PATTERNS
+     ======================================================== */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  /* --- Pattern 1: Paper card --- */
+  .card-paper {
+    background: var(--bone);
+    border: var(--rule);
+    border-radius: 14px;
+    padding: 28px;
+    position: relative;
+  }
+  .card-paper .corner-tape {
+    position: absolute; top: -8px; left: 26px;
+    width: 66px; height: 18px;
+    background: var(--highlighter);
+    opacity: 0.7;
+    transform: rotate(-1.5deg);
+    border-radius: 2px;
+  }
+  .card-paper h4 {
+    font-family: var(--serif); font-weight: 500; font-size: 24px;
+    line-height: 1.15; margin-bottom: 12px;
+    letter-spacing: -0.005em;
+  }
+  .card-paper h4 em { font-style: italic; color: var(--plum); }
+  .card-paper p { font-size: 15.5px; color: var(--espresso-2); line-height: 1.55; }
+
+  /* --- Pattern 2: Photo-led card (placeholder) --- */
+  .card-photo {
+    background: var(--cream-deep);
+    border-radius: 14px;
+    overflow: hidden;
+    border: var(--rule);
+  }
+  .card-photo .img {
+    aspect-ratio: 4/3;
+    background:
+      linear-gradient(135deg, #7A5440 0%, #C95E3E 50%, #E8B68A 100%);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff8ed;
+    font-family: var(--hand);
+    font-weight: 600;
+    font-size: 18px;
+    text-align: center;
+    padding: 20px;
+  }
+  .card-photo .img.sky { background: linear-gradient(160deg, #4F7B92 0%, #7FA6B8 55%, #D8E3E7 100%); color: #233b48; }
+  .card-photo .img.moss { background: linear-gradient(160deg, #2E4529 0%, #4B6B3E 55%, #A7B68B 100%); color: #f6f0e6; }
+  .card-photo .body { padding: 20px 24px 24px; }
+  .card-photo .eyebrow {
+    font-size: 11.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--clay); margin-bottom: 6px;
+  }
+  .card-photo h4 {
+    font-family: var(--serif); font-weight: 500; font-size: 22px; line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .card-photo p { font-size: 15px; color: var(--espresso-2); line-height: 1.5; }
+
+  /* --- Pattern 3: Numbered step / list card --- */
+  .card-step {
+    background: transparent;
+    border-top: 2px solid var(--espresso);
+    padding: 24px 0 0;
+  }
+  .card-step .step-num {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: 36px; color: var(--clay); line-height: 1; margin-bottom: 12px;
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .card-step .step-num .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--clay); display: inline-block;
+  }
+  .card-step h4 {
+    font-family: var(--serif); font-weight: 500; font-size: 22px; line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .card-step p { font-size: 15.5px; color: var(--espresso-2); line-height: 1.55; max-width: 36ch; }
+
+  /* ========================================================
+     USAGE EXAMPLE — "Buyer Journey" snippet
+     ======================================================== */
+  .example {
+    background: var(--bone);
+    border: var(--rule);
+    border-radius: 18px;
+    padding: 52px;
+    position: relative;
+  }
+  .example .fold-line {
+    position: absolute; left: 0; right: 0; top: 50%;
+    border-top: 1px dashed var(--espresso-4);
+    opacity: 0.35;
+  }
+  .example .ex-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .example .ex-eyebrow {
+    font-family: var(--sans);
+    font-size: 12px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--clay); margin-bottom: 18px;
+  }
+  .example .ex-eyebrow::before { content: '● '; color: var(--clay); }
+  .example h3 {
+    font-family: var(--serif); font-variation-settings: 'opsz' 72;
+    font-weight: 500; font-size: 48px; line-height: 1.02; letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .example h3 em { font-style: italic; color: var(--plum); }
+  .example h3 .hand-over {
+    font-family: var(--hand); font-weight: 600;
+    color: var(--clay-deep); font-style: normal;
+    font-size: 0.7em;
+    display: inline-block;
+    transform: rotate(-2deg);
+    position: relative; top: -0.1em;
+  }
+  .example .ex-body {
+    font-size: 17px; color: var(--espresso-2); line-height: 1.6; margin-top: 22px;
+    max-width: 42ch;
+  }
+  .example .ex-body em { color: var(--plum); font-style: italic; }
+  .example .ex-cta {
+    display: flex; gap: 14px; flex-wrap: wrap; margin-top: 30px; align-items: center;
+  }
+  .example .ex-note {
+    font-family: var(--hand);
+    font-weight: 600;
+    font-size: 22px;
+    color: var(--clay-deep);
+    transform: rotate(-2deg);
+    margin-left: 10px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+
+  .example .ex-side {
+    background: var(--cream-deep);
+    border-radius: 14px;
+    padding: 26px;
+    border: var(--rule);
+  }
+  .example .ex-side .label { margin-bottom: 18px; }
+  .example .ex-side ul {
+    list-style: none;
+    display: grid; gap: 14px;
+  }
+  .example .ex-side ul li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: start;
+    font-size: 15.5px; line-height: 1.5;
+    color: var(--espresso);
+  }
+  .example .ex-side ul li .num {
+    font-family: var(--serif); font-style: italic; font-weight: 500;
+    color: var(--clay); font-size: 18px;
+  }
+  .example .ex-side ul li b { font-weight: 600; }
+  .example .ex-side ul li .es {
+    display: block;
+    font-family: var(--serif); font-style: italic;
+    color: var(--espresso-3);
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  /* ========================================================
+     CONTRA — what we DON'T do
+     ======================================================== */
+  .contra-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .contra {
+    border: var(--rule);
+    border-radius: 14px;
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .contra.no {
+    background: #fbf6ec;
+    border-color: #C95E3E44;
+  }
+  .contra.yes {
+    background: var(--bone);
+    border-color: var(--moss);
+    border-width: 1.5px;
+  }
+  .contra .stamp {
+    position: absolute; top: 18px; right: 22px;
+    font-family: var(--hand); font-weight: 700;
+    font-size: 26px;
+    transform: rotate(6deg);
+  }
+  .contra.no .stamp { color: var(--clay); }
+  .contra.yes .stamp { color: var(--moss-deep); }
+  .contra .label { margin-bottom: 16px; }
+  .contra h4 {
+    font-family: var(--serif); font-weight: 500; font-size: 22px;
+    line-height: 1.2; margin-bottom: 12px;
+  }
+  .contra ul { list-style: none; display: grid; gap: 8px; }
+  .contra ul li {
+    font-size: 15px; color: var(--espresso-2); line-height: 1.5;
+    padding-left: 22px; position: relative;
+  }
+  .contra.no ul li::before { content: '✕'; position: absolute; left: 0; color: var(--clay); font-weight: 700; }
+  .contra.yes ul li::before { content: '✓'; position: absolute; left: 0; color: var(--moss); font-weight: 700; }
+
+  /* ========================================================
+     FOOTER
+     ======================================================== */
+  footer {
+    padding: 60px 0 80px;
+    text-align: center;
+    border-bottom: 0;
+  }
+  footer .mark {
+    font-family: var(--serif); font-style: italic; font-weight: 500; font-size: 22px;
+    color: var(--espresso-2);
+  }
+  footer .tiny {
+    margin-top: 12px;
+    font-size: 13px; color: var(--espresso-3);
+    font-family: var(--sans);
+  }
+
+  /* ========================================================
+     RESPONSIVE
+     ======================================================== */
+  @media (max-width: 780px) {
+    .masthead h1 { font-size: 52px; }
+    .section-title { font-size: 28px; }
+    .section-num { font-size: 36px; }
+    .type-row { grid-template-columns: 1fr; gap: 10px; }
+    .type-spec { letter-spacing: 0.12em; }
+    .t-h1 { font-size: 44px; }
+    .t-h2 { font-size: 32px; }
+    .t-h3 { font-size: 24px; }
+    .example { padding: 32px 24px; }
+    .example .ex-grid { grid-template-columns: 1fr; gap: 32px; }
+    .example h3 { font-size: 36px; }
+    .contra-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =======================================================
+     MASTHEAD
+     ======================================================= -->
+<header class="masthead page">
+  <div class="issue-line">
+    <span>Design System · v1</span>
+    <span class="divider"></span>
+    <span>April 2026</span>
+    <span class="divider"></span>
+    <span>Yellow Springs, OH</span>
+  </div>
+
+  <h1>
+    <em>The visual language</em> for<br/>
+    a Latina-led brokerage <span class="hand">&amp; a guild for people</span><br/>
+    who thought they missed the boat.
+  </h1>
+
+  <p class="kicker">
+    Editorial-zine-meets-neighborly-guide. Magical realism. Latina entrepreneur warmth.
+    Systems and tenderness. No teal, no SaaS dashboards, no stock blobs — ever.
+  </p>
+
+  <div class="sig-row">
+    <div class="sig-avatar">L</div>
+    <div class="sig-text">
+      <b>Laura Rao</b> · Bilingual realtor · The Unicorn Guild<br/>
+      <span class="muted">This document is the default for every artifact we make together.</span>
+    </div>
+  </div>
+</header>
+
+<!-- =======================================================
+     01 — VOICE
+     ======================================================= -->
+<section class="page">
+  <div class="section-head">
+    <span class="section-num">01</span>
+    <h2 class="section-title">What we are. What we <em>aren't.</em></h2>
+  </div>
+
+  <div class="contra-grid">
+    <div class="contra yes">
+      <span class="stamp">sí</span>
+      <div class="t-label label">We are</div>
+      <h4>An editorial guide you'd read at a kitchen table.</h4>
+      <ul>
+        <li>Magical realism — things are real, but a little enchanted</li>
+        <li>Rebellious professionalism — rigor with warmth, not corporate</li>
+        <li>Bilingual, multi-generational, multi-racial by default</li>
+        <li>Rooted in Yellow Springs / Dayton and Latin American texture</li>
+        <li>Systems and tenderness — checklists AND cozy kitchens</li>
+      </ul>
+    </div>
+    <div class="contra no">
+      <span class="stamp">never</span>
+      <div class="t-label label">We are not</div>
+      <h4>A B2B SaaS landing page. Ever.</h4>
+      <ul>
+        <li>No teal, cyan, or neon gradients</li>
+        <li>No floating browser mockups as heroes</li>
+        <li>No 3D blobs, no "AI magic swirl," no abstract floating shapes</li>
+        <li>No "unlock synergies," no VC deck clichés</li>
+        <li>No centered hero + 3-word tagline + giant purple button</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     02 — PALETTE
+     ======================================================= -->
+<section class="page">
+  <div class="section-head">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Color. <em>Earth, sky, mural paint.</em></h2>
+  </div>
+  <p class="section-lede">
+    Warm off-whites do the heavy lifting. Clay and moss ground the page. Sky gives breath.
+    Saturated accents are used like a mural painter or a highlighter — small hits, never fills.
+  </p>
+
+  <div class="palette-group">
+    <div class="palette-group-title">Earth · grounding <span class="meta">the paper and the soil</span></div>
+    <div class="swatches">
+      <div class="swatch"><div class="chip dark" style="background:#F6F0E6;">Cream</div><div class="meta"><span class="name">Cream</span><span class="hex">#F6F0E6</span></div></div>
+      <div class="swatch"><div class="chip dark" style="background:#FBF6EC;">Bone</div><div class="meta"><span class="name">Bone</span><span class="hex">#FBF6EC</span></div></div>
+      <div class="swatch"><div class="chip dark" style="background:#EFE7D7;">Deep cream</div><div class="meta"><span class="name">Cream · deep</span><span class="hex">#EFE7D7</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#C95E3E;">Clay</div><div class="meta"><span class="name">Clay</span><span class="hex">#C95E3E</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#9C3F24;">Clay · deep</div><div class="meta"><span class="name">Clay · deep</span><span class="hex">#9C3F24</span></div></div>
+      <div class="swatch"><div class="chip dark" style="background:#F2D8CC;">Clay · pale</div><div class="meta"><span class="name">Clay · pale</span><span class="hex">#F2D8CC</span></div></div>
+    </div>
+  </div>
+
+  <div class="palette-group">
+    <div class="palette-group-title">Sky &amp; moss <span class="meta">Yellow Springs mornings, Costa Rica hillsides</span></div>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:#4B6B3E;">Moss</div><div class="meta"><span class="name">Moss</span><span class="hex">#4B6B3E</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#2E4529;">Moss · deep</div><div class="meta"><span class="name">Moss · deep</span><span class="hex">#2E4529</span></div></div>
+      <div class="swatch"><div class="chip dark" style="background:#D5DCC3;">Moss · pale</div><div class="meta"><span class="name">Moss · pale</span><span class="hex">#D5DCC3</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#7FA6B8;">Sky</div><div class="meta"><span class="name">Sky</span><span class="hex">#7FA6B8</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#4F7B92;">Sky · deep</div><div class="meta"><span class="name">Sky · deep</span><span class="hex">#4F7B92</span></div></div>
+      <div class="swatch"><div class="chip dark" style="background:#D8E3E7;">Sky · pale</div><div class="meta"><span class="name">Sky · pale</span><span class="hex">#D8E3E7</span></div></div>
+    </div>
+  </div>
+
+  <div class="palette-group">
+    <div class="palette-group-title">Ink · espresso <span class="meta">near-black, with warmth</span></div>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:#1F1713;">Espresso</div><div class="meta"><span class="name">Espresso</span><span class="hex">#1F1713</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#4A3C34;">Espresso · 2</div><div class="meta"><span class="name">Espresso · 2</span><span class="hex">#4A3C34</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#7B6A5E;">Espresso · 3</div><div class="meta"><span class="name">Espresso · 3</span><span class="hex">#7B6A5E</span></div></div>
+      <div class="swatch"><div class="chip dark" style="background:#B0A091;">Espresso · 4</div><div class="meta"><span class="name">Espresso · 4</span><span class="hex">#B0A091</span></div></div>
+    </div>
+  </div>
+
+  <div class="palette-group">
+    <div class="palette-group-title">Mural paint <span class="meta">use sparingly — like highlighter on a page</span></div>
+    <div class="swatches">
+      <div class="swatch"><div class="chip dark" style="background:#F4C95D;">Highlighter</div><div class="meta"><span class="name">Highlighter</span><span class="hex">#F4C95D</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#E38B2E;">Marigold</div><div class="meta"><span class="name">Marigold</span><span class="hex">#E38B2E</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#7A3E5E;">Plum</div><div class="meta"><span class="name">Plum</span><span class="hex">#7A3E5E</span></div></div>
+      <div class="swatch"><div class="chip" style="background:#D26B6B;">Rose</div><div class="meta"><span class="name">Rose</span><span class="hex">#D26B6B</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     03 — TYPE
+     ======================================================= -->
+<section class="page">
+  <div class="section-head">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Type. <em>A literary zine. Not a bank.</em></h2>
+  </div>
+  <p class="section-lede">
+    <b>Fraunces</b> for headlines — a humanist serif with optical sizes, warm in display and readable in small
+    caps. <b>Figtree</b> for body — a friendly sans that reads like conversation. <b>Caveat</b> for marginalia —
+    the handwritten highlighter moments, used sparingly.
+  </p>
+
+  <div class="type-stack">
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">H1 · Display</span>
+        <span class="details">Fraunces 500 · 64/66 · opsz 144<br/>letter-spacing −0.015em</span>
+      </div>
+      <div class="t-h1">The <em>front door</em> was painted green.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">H2 · Section</span>
+        <span class="details">Fraunces 500 · 42/46 · opsz 72</span>
+      </div>
+      <div class="t-h2">She'd never held a closing folder before.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">H3 · Sub-section</span>
+        <span class="details">Fraunces 500 · 28/32 · opsz 36</span>
+      </div>
+      <div class="t-h3">A kitchen-table consult, no scripts.</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">Lede</span>
+        <span class="details">Figtree 400 · 22/32</span>
+      </div>
+      <div class="t-lede">
+        Most of our buyers have been told, quietly or out loud, that this isn't for them.
+        We disagree — and then we get to work.
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">Body</span>
+        <span class="details">Figtree 400 · 17/27 · max 540px<br/>italic uses plum</span>
+      </div>
+      <div class="t-body">
+        The first meeting is 90 minutes at your kitchen table, with a notebook and two cups of coffee.
+        We map out what you have, what you want, and what's actually standing between you and the porch light.
+        <em>Nada de letra chiquita</em> — no small print, no rushed forms.
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">Caption</span>
+        <span class="details">Figtree 500 · 13/19</span>
+      </div>
+      <div class="t-caption">
+        Laura and her client walk the block before looking at the house. Dayton, March 2025.
+      </div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">Label · eyebrow</span>
+        <span class="details">Figtree 700 · 11.5px<br/>tracking 0.22em · UPPERCASE</span>
+      </div>
+      <div class="t-label">For first-time buyers · Para compradores primerizos</div>
+    </div>
+
+    <div class="type-row">
+      <div class="type-spec">
+        <span class="label">Handwritten</span>
+        <span class="details">Caveat 600 · 32/36<br/>use once per section, max</span>
+      </div>
+      <div class="t-hand">↳ you belong here, mija</div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     04 — BUTTONS
+     ======================================================= -->
+<section class="page">
+  <div class="section-head">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Buttons. <em>Round, warm, honest.</em></h2>
+  </div>
+  <p class="section-lede">
+    Pills, not rectangles. Clay is the action color; espresso is the commit color;
+    ghost and link carry everything else. No drop shadows. No gradients on buttons.
+  </p>
+
+  <div class="btn-grid">
+    <button class="btn btn-primary">Book a kitchen-table consult <span class="arrow">→</span></button>
+    <button class="btn btn-secondary">See a listing walkthrough</button>
+    <button class="btn btn-ghost">What this costs</button>
+    <a href="#" class="btn btn-link">Read Elena's story →</a>
+  </div>
+
+  <div style="margin-top:28px;">
+    <div class="t-label" style="margin-bottom:14px;">States · primary</div>
+    <div class="btn-grid">
+      <button class="btn btn-primary">Default</button>
+      <button class="btn btn-primary" style="background:var(--clay-deep); border-color:var(--clay-deep);">Hover</button>
+      <button class="btn btn-primary" style="opacity:.55; cursor:not-allowed;">Disabled</button>
+      <button class="btn btn-primary" style="box-shadow:0 0 0 4px var(--focus-ring);">Focus</button>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     05 — CARDS
+     ======================================================= -->
+<section class="page">
+  <div class="section-head">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Cards. <em>Paper, photo, and step-by-step.</em></h2>
+  </div>
+  <p class="section-lede">
+    Three patterns. Paper card has a highlighter taped to the top. Photo-led card
+    prioritizes imagery (real when we have it, warm painted gradient when we don't).
+    Step card is numbered and quiet — for buyer journeys and checklists.
+  </p>
+
+  <div class="t-label" style="margin-bottom:14px;">Pattern A · Paper card</div>
+  <div class="cards-grid" style="margin-bottom:40px;">
+    <div class="card-paper">
+      <div class="corner-tape"></div>
+      <h4>What <em>closing day</em> actually looks like.</h4>
+      <p>A two-page walk-through, plain language, both English and Spanish. No surprises. We read it at your kitchen table a week before.</p>
+    </div>
+    <div class="card-paper">
+      <div class="corner-tape" style="background:var(--moss-pale); transform:rotate(1.5deg);"></div>
+      <h4>Over 40 and <em>finally</em> buying.</h4>
+      <p>You didn't miss the boat. You're just boarding a different one — and it has a better view.</p>
+    </div>
+    <div class="card-paper">
+      <div class="corner-tape" style="background:var(--sky-pale); transform:rotate(-2deg);"></div>
+      <h4>First-gen? Read this <em>first.</em></h4>
+      <p>Everything nobody explained: escrow, earnest money, inspection contingencies. In your voice.</p>
+    </div>
+  </div>
+
+  <div class="t-label" style="margin-bottom:14px;">Pattern B · Photo-led card</div>
+  <div class="cards-grid" style="margin-bottom:40px;">
+    <div class="card-photo">
+      <div class="img">[ real home photo<br/>4:3 · warm daylight ]</div>
+      <div class="body">
+        <div class="eyebrow">Recently sold · Dayton</div>
+        <h4>Bungalow with a front porch swing.</h4>
+        <p>First home for the Obregón family. Three offers, we held the line, they kept the porch.</p>
+      </div>
+    </div>
+    <div class="card-photo">
+      <div class="img sky">[ neighborhood walk<br/>Yellow Springs, golden hour ]</div>
+      <div class="body">
+        <div class="eyebrow">Neighborhood note</div>
+        <h4>Walking Xenia Ave at 7am.</h4>
+        <p>Why I show up for coffee before every listing appointment, and what I learn from the street.</p>
+      </div>
+    </div>
+    <div class="card-photo">
+      <div class="img moss">[ workshop table<br/>notebooks and handouts ]</div>
+      <div class="body">
+        <div class="eyebrow">Workshop</div>
+        <h4>Cafecito &amp; Contracts.</h4>
+        <p>Ninety minutes, bilingual, with a printed workbook. You leave knowing what a HUD-1 is.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="t-label" style="margin-bottom:14px;">Pattern C · Numbered step</div>
+  <div class="cards-grid">
+    <div class="card-step">
+      <div class="step-num"><span class="dot"></span>Nº 01</div>
+      <h4>We sit at your kitchen table.</h4>
+      <p>Before a single showing. We map out money, timing, and what matters — not just square feet.</p>
+    </div>
+    <div class="card-step">
+      <div class="step-num"><span class="dot"></span>Nº 02</div>
+      <h4>You get the honest number.</h4>
+      <p>What you can borrow, what you'll actually pay per month, and what closing will cost. No surprises.</p>
+    </div>
+    <div class="card-step">
+      <div class="step-num"><span class="dot"></span>Nº 03</div>
+      <h4>We walk the block, then the house.</h4>
+      <p>Every showing starts outside. Neighbors, sidewalks, noise at 7am. The house is only half the story.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     06 — EXAMPLE IN USE
+     ======================================================= -->
+<section class="page">
+  <div class="section-head">
+    <span class="section-num">06</span>
+    <h2 class="section-title">The system, <em>in one breath.</em></h2>
+  </div>
+  <p class="section-lede">
+    This is what a section of a first-time buyer one-pager looks like with every piece working together —
+    type, palette, a paper card, a step list, a handwritten margin note.
+  </p>
+
+  <div class="example">
+    <div class="ex-grid">
+      <div>
+        <div class="ex-eyebrow">For first-time buyers · Para compradores primerizos</div>
+        <h3>
+          You didn't miss the boat. <span class="hand-over">you're early, mija —</span><br/>
+          <em>the harbor just moved.</em>
+        </h3>
+        <p class="ex-body">
+          Most of the stories about buying a home were written for someone else — someone with
+          generational down-payment money, a W-2 going back ten years, and parents who'd done it before.
+          <em>Si eso no eres tú, you are exactly who I built this for.</em>
+          We start at your kitchen table, with a notebook and two cups of coffee.
+        </p>
+        <div class="ex-cta">
+          <button class="btn btn-primary">Book a kitchen-table consult <span class="arrow">→</span></button>
+          <span class="ex-note">↳ it's free &amp; 90 min</span>
+        </div>
+      </div>
+      <div class="ex-side">
+        <div class="t-label label">What we cover</div>
+        <ul>
+          <li>
+            <span class="num">i.</span>
+            <div><b>Your real number.</b> Not what Zillow says — what you can actually afford every month, after life.
+              <span class="es">Tu número real, sin sustos.</span></div>
+          </li>
+          <li>
+            <span class="num">ii.</span>
+            <div><b>A paper map of the next 90 days.</b> Every step, what I do, what you do, what it costs.
+              <span class="es">Un mapa, en papel, para los próximos 90 días.</span></div>
+          </li>
+          <li>
+            <span class="num">iii.</span>
+            <div><b>Every question you're embarrassed to ask.</b> Bring them all — in English or Spanish, written or out loud.
+              <span class="es">En inglés o español — no hay pregunta pequeña.</span></div>
+          </li>
+          <li>
+            <span class="num">iv.</span>
+            <div><b>Homework, the good kind.</b> Two sheets of paper, a calendar, and a saved text from me if you get overwhelmed.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =======================================================
+     FOOTER
+     ======================================================= -->
+<footer class="page">
+  <p class="mark">The Unicorn Guild · Rhapsode · Laura Rao</p>
+  <p class="tiny">Design system v1 · April 2026 · Built with Claude Design</p>
+</footer>
+
+</body>
+</html>

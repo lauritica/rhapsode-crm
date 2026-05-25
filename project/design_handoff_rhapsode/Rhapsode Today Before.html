@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Rhapsode — Today</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #0b0910;
+    color: #e8e4ec;
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  .app {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 28px 36px 60px;
+  }
+
+  /* ====== Header ====== */
+  .head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 26px;
+  }
+  .brand {
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .brand-icon { font-size: 22px; }
+  .brand h1 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+  }
+  .brand .sub {
+    margin-top: 2px;
+    color: #7a7482;
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+  }
+  .head-right {
+    display: flex; gap: 10px;
+  }
+  .btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .btn.ghost {
+    background: rgba(255,255,255,0.04);
+    color: #c4bed0;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .btn.primary {
+    background: #8a6bff;
+    color: #fff;
+  }
+
+  /* ====== Tabs ====== */
+  .tabs {
+    display: flex; gap: 6px;
+    margin-bottom: 26px;
+    padding-bottom: 2px;
+  }
+  .tab {
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: #857f8f;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .tab.active {
+    background: rgba(138, 107, 255, 0.14);
+    color: #b8a1ff;
+  }
+
+  /* ====== Section label ====== */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #706a79;
+    font-weight: 500;
+    margin: 18px 0 14px;
+  }
+  .section-label.cold {
+    color: #d5757e;
+  }
+
+  /* ====== Cards ====== */
+  .stack {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .card {
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.015);
+    padding: 16px 20px;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 20px;
+  }
+  .card.active {
+    border-color: rgba(80, 180, 120, 0.35);
+    box-shadow: 0 0 0 1px rgba(80, 180, 120, 0.1) inset, 0 0 24px -12px rgba(80, 180, 120, 0.3);
+  }
+  .card.warming {
+    border-color: rgba(232, 118, 90, 0.38);
+    box-shadow: 0 0 0 1px rgba(232, 118, 90, 0.08) inset;
+  }
+  .card.cold {
+    opacity: 0.7;
+  }
+
+  .card .dot {
+    position: absolute;
+    left: 8px; top: 22px;
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .card.active .dot { background: #6cd39b; box-shadow: 0 0 8px #6cd39b; }
+  .card.warming .dot { background: #e8765a; box-shadow: 0 0 8px #e8765a; }
+  .card.cold .dot { background: #d5757e; }
+
+  .card .name-row {
+    display: flex; align-items: center; gap: 10px;
+    padding-left: 8px;
+  }
+  .name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #eae5f0;
+    letter-spacing: -0.005em;
+  }
+  .lang-pill {
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+  .lang-en { background: rgba(120, 150, 230, 0.18); color: #a7baed; }
+  .lang-es { background: rgba(100, 190, 140, 0.18); color: #85d2a8; }
+  .ago {
+    font-size: 11.5px;
+    color: #706a79;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.01em;
+  }
+  .ago.silence { color: #d5757e; font-weight: 500; }
+
+  .meta {
+    padding-left: 8px;
+    font-size: 12.5px;
+    color: #8c8598;
+    margin-top: 2px;
+  }
+  .meta .sep { color: #555060; margin: 0 4px; }
+
+  .todo {
+    padding-left: 8px;
+    font-size: 13px;
+    color: #d8c7a8;
+    margin-top: 5px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .todo::before {
+    content: '↳';
+    color: #8a8193;
+    font-size: 13px;
+  }
+  .card.active .todo {
+    color: #a8e0bf;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="head">
+    <div class="brand">
+      <span class="brand-icon">🦄</span>
+      <div>
+        <h1>R<i style="color:#b8a1ff">h</i>apsode</h1>
+        <div class="sub">Tuesday, April 21 · 16 active · rhapsode.pro</div>
+      </div>
+    </div>
+    <div class="head-right">
+      <button class="btn ghost">↓ CSV</button>
+      <button class="btn primary">+ add</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active">Today</div>
+    <div class="tab">Pipeline</div>
+    <div class="tab">Everyone</div>
+    <div class="tab">Ask AI</div>
+    <div class="tab">Cap</div>
+  </div>
+
+  <div class="section-label">Make these calls today</div>
+
+  <div class="stack">
+
+    <div class="card active">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">Esperanza Vega</span>
+        <span class="lang-pill lang-es">ES</span>
+      </div>
+      <span class="ago">0d ago</span>
+      <div class="meta">Seller <span class="sep">·</span> 1208 Maple Ridge</div>
+      <div></div>
+      <div class="todo">Confirm photographer Friday 10am</div>
+    </div>
+
+    <div class="card warming">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">David Chen</span>
+        <span class="lang-pill lang-en">EN</span>
+      </div>
+      <span class="ago">1d ago</span>
+      <div class="meta">Seller <span class="sep">·</span> 88 Heron Bay Ln</div>
+      <div></div>
+      <div class="todo">Approve contractor bid · Reno Prep</div>
+    </div>
+
+    <div class="card warming">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">Priya Chakravarty</span>
+        <span class="lang-pill lang-en">EN</span>
+      </div>
+      <span class="ago">0d ago</span>
+      <div class="meta">Seller <span class="sep">·</span> 341 Beacon Hill Rd</div>
+      <div></div>
+      <div class="todo">Coordinate inspection Thursday</div>
+    </div>
+
+    <div class="card warming">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">Hector Ortiz</span>
+        <span class="lang-pill lang-es">ES</span>
+      </div>
+      <span class="ago">4d ago</span>
+      <div class="meta">Seller <span class="sep">·</span> 3360 Larkspur Dr</div>
+      <div></div>
+      <div class="todo">Second visit — bring comps</div>
+    </div>
+
+    <div class="card warming">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">Lynda Harrington</span>
+        <span class="lang-pill lang-en">EN</span>
+      </div>
+      <span class="ago">0d ago</span>
+      <div class="meta">Buyer <span class="sep">·</span> Yellow Springs (target)</div>
+      <div></div>
+      <div class="todo">Discovery call · Today 3pm</div>
+    </div>
+
+    <div class="card active">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">Janelle Okoye</span>
+        <span class="lang-pill lang-en">EN</span>
+      </div>
+      <span class="ago">3d ago</span>
+      <div class="meta">Seller <span class="sep">·</span> 1205 Summit Ridge, Washington Twp</div>
+      <div></div>
+      <div class="todo">Stylist walkthrough Tuesday — finalize punch list</div>
+    </div>
+
+  </div>
+
+  <div class="section-label cold">Going cold — don't ghost these people</div>
+
+  <div class="stack">
+    <div class="card cold">
+      <span class="dot"></span>
+      <div class="name-row">
+        <span class="name">Theresa Blalock</span>
+      </div>
+      <span class="ago silence">52d silence</span>
+      <div class="meta">Seller <span class="sep">·</span> Lead</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
